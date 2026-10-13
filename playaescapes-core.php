@@ -257,3 +257,63 @@ function pe_guardar_metabox_hotel( $post_id ) {
 }
 add_action( 'save_post_pe_hotel', 'pe_guardar_metabox_hotel' );
 
+
+
+// LEADS (solicitudes del formulario). Paso 1: dónde se guardan.
+
+// Tipo de contenido privado "Leads": visible solo en el administrador.
+function pe_registrar_leads() {
+	register_post_type( 'pe_lead', array(
+		'labels' => array(
+			'name'          => 'Leads',
+			'singular_name' => 'Lead',
+			'edit_item'     => 'Ver lead',
+		),
+		'public'       => false, // No tiene página pública
+		'show_ui'      => true,  // Pero sí aparece en el administrador
+		'menu_icon'    => 'dashicons-email-alt',
+		'supports'     => array( 'title' ),
+		'capabilities' => array( 'create_posts' => 'do_not_allow' ), // No se crean a mano
+		'map_meta_cap' => true,
+	) );
+}
+add_action( 'init', 'pe_registrar_leads' );
+
+// Función reutilizable: recibe los datos de una solicitud y la guarda.
+// Devuelve el ID del lead creado, o 0 si falló.
+function pe_crear_lead( $datos ) {
+	$campos = array(
+		'hotel', 'llegada', 'salida', 'adultos', 'ninos', 'habitaciones',
+		'nombre', 'apellido', 'correo', 'telefono', 'pais',
+		'promocion', 'utm_source', 'utm_medium', 'utm_campaign',
+	);
+
+	$limpios = array();
+	foreach ( $campos as $campo ) {
+		$valor = isset( $datos[ $campo ] ) ? $datos[ $campo ] : '';
+		$limpios[ $campo ] = ( 'correo' === $campo )
+			? sanitize_email( $valor )
+			: sanitize_text_field( $valor );
+	}
+
+	$titulo = trim( $limpios['nombre'] . ' ' . $limpios['apellido'] );
+	if ( '' === $titulo ) {
+		$titulo = 'Lead sin nombre';
+	}
+
+	$id = wp_insert_post( array(
+		'post_type'   => 'pe_lead',
+		'post_status' => 'publish',
+		'post_title'  => $titulo,
+	) );
+
+	if ( is_wp_error( $id ) || ! $id ) {
+		return 0;
+	}
+
+	foreach ( $limpios as $campo => $valor ) {
+		update_post_meta( $id, '_pe_lead_' . $campo, $valor );
+	}
+
+	return $id;
+}
