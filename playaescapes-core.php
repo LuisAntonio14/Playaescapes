@@ -471,6 +471,8 @@ function pe_procesar_formulario() {
 		exit;
 	}
 
+	pe_enviar_aviso_lead( $id );
+
 	wp_safe_redirect( home_url( '/gracias/' ) );
 	exit;
 }
@@ -511,3 +513,107 @@ function pe_mostrar_metabox_lead( $post ) {
 	}
 	echo '</tbody></table>';
 }
+
+// ---------------------------------------------------------------
+// LEADS. Paso 3: aviso por correo.
+// ---------------------------------------------------------------
+
+// Correo al que llegan los avisos. AÚN POR CONFIRMAR.
+function pe_correo_destino() {
+	return 'lvelasco@sandos.com';// correo de pruebas
+}
+
+// Envía el aviso de un lead ya guardado. Si falla, el lead sigue guardado.
+function pe_enviar_aviso_lead( $lead_id ) {
+	$campos = array(
+		'hotel'        => 'Hotel',
+		'llegada'      => 'Llegada',
+		'salida'       => 'Salida',
+		'adultos'      => 'Adultos',
+		'ninos'        => 'Niños',
+		'habitaciones' => 'Habitaciones',
+		'nombre'       => 'Nombre',
+		'apellido'     => 'Apellido',
+		'correo'       => 'Correo',
+		'telefono'     => 'Teléfono',
+		'pais'         => 'País',
+		'promocion'    => 'Promoción',
+		'utm_source'   => 'UTM source',
+		'utm_medium'   => 'UTM medium',
+		'utm_campaign' => 'UTM campaign',
+	);
+
+	$lineas = array();
+	foreach ( $campos as $clave => $etiqueta ) {
+		$valor    = get_post_meta( $lead_id, '_pe_lead_' . $clave, true );
+		$lineas[] = $etiqueta . ': ' . $valor;
+	}
+
+	$nombre = trim(
+		get_post_meta( $lead_id, '_pe_lead_nombre', true ) . ' ' .
+		get_post_meta( $lead_id, '_pe_lead_apellido', true )
+	);
+	$hotel   = get_post_meta( $lead_id, '_pe_lead_hotel', true );
+	$asunto  = 'Nueva solicitud PlayaEscapes: ' . $nombre . ' - ' . $hotel;
+	$asunto  = str_replace( array( "\r", "\n" ), ' ', $asunto );
+	$mensaje = "Se recibió una nueva solicitud desde PlayaEscapes.\n\n" . implode( "\n", $lineas );
+
+	$correo_cliente = get_post_meta( $lead_id, '_pe_lead_correo', true );
+	$cabeceras      = array( 'Content-Type: text/plain; charset=UTF-8' );
+	if ( is_email( $correo_cliente ) ) {
+		$cabeceras[] = 'Reply-To: ' . $correo_cliente;
+	}
+
+	return wp_mail( pe_correo_destino(), $asunto, $mensaje, $cabeceras );
+}
+
+// ---------------------------------------------------------------
+// UTM guardadas 30 días en una cookie (se rellenan en el formulario).
+// ---------------------------------------------------------------
+function pe_script_utm() {
+	?>
+	<script>
+	(function () {
+		var claves = ['utm_source', 'utm_medium', 'utm_campaign'];
+		var dias = 30;
+
+		function leerCookie() {
+			var m = document.cookie.match(/(?:^|; )pe_utm=([^;]*)/);
+			if (!m) { return {}; }
+			try { return JSON.parse(decodeURIComponent(m[1])) || {}; } catch (e) { return {}; }
+		}
+
+		function guardarCookie(datos) {
+			var caduca = new Date(Date.now() + dias * 24 * 60 * 60 * 1000).toUTCString();
+			var segura = location.protocol === 'https:' ? '; Secure' : '';
+			document.cookie = 'pe_utm=' + encodeURIComponent(JSON.stringify(datos)) +
+				'; expires=' + caduca + '; path=/; SameSite=Lax' + segura;
+		}
+
+		// 1) Si la dirección trae UTM, se guardan (reemplazan las anteriores).
+		var params = new URLSearchParams(window.location.search);
+		var nuevas = {};
+		var hay = false;
+		claves.forEach(function (c) {
+			var v = params.get(c);
+			if (v) { nuevas[c] = v.substring(0, 100); hay = true; }
+		});
+		if (hay) { guardarCookie(nuevas); }
+
+		// 2) Rellena los campos ocultos del formulario con lo guardado.
+		var guardadas = hay ? nuevas : leerCookie();
+		document.addEventListener('DOMContentLoaded', function () {
+			document.querySelectorAll('.pe-formulario').forEach(function (form) {
+				claves.forEach(function (c) {
+					var campo = form.querySelector('input[name="' + c + '"]');
+					if (campo && !campo.value && guardadas[c]) {
+						campo.value = guardadas[c];
+					}
+				});
+			});
+		});
+	})();
+	</script>
+	<?php
+}
+add_action( 'wp_footer', 'pe_script_utm' );
