@@ -15,12 +15,7 @@ function pe_formulario_shortcode( $atts ) {
 		'promocion' => '',
 	), $atts );
 
-	$hoteles = array(
-		'Sandos Cancún',
-		'Sandos Caracol Eco Resort',
-		'Sandos Playacar',
-		'Sandos Finisterra',
-	);
+	$hoteles = pe_lista_hoteles();
 	$paises = array( 'México', 'Argentina', 'Canadá', 'Colombia', 'USA', 'Otro' );
 
 	// Las UTM de la campaña viajan ocultas con el lead.
@@ -144,7 +139,7 @@ function pe_procesar_formulario() {
 
 	// Validaciones mínimas: campos obligatorios, correo válido y repetido igual,
 	// teléfono de 10 a 15 dígitos (misma regla del sitio actual).
-	if ( '' === $nombre || '' === $apellido || '' === $hotel
+	if ( '' === $nombre || '' === $apellido || ! in_array( $hotel, pe_lista_hoteles(), true )
 		|| ! is_email( $correo ) || $correo !== $correo2
 		|| ! preg_match( '/^\d{10,15}$/', $telefono ) ) {
 		wp_safe_redirect( $error );
