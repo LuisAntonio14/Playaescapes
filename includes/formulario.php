@@ -15,6 +15,17 @@ function pe_formulario_shortcode( $atts ) {
 		'promocion' => '',
 	), $atts );
 
+	// También se puede prellenar desde la dirección: ?pe_hotel=...&pe_promocion=...
+	if ( '' === $atts['hotel'] && isset( $_GET['pe_hotel'] ) ) {
+		$hotel_url = sanitize_text_field( wp_unslash( $_GET['pe_hotel'] ) );
+		if ( in_array( $hotel_url, pe_lista_hoteles(), true ) ) {
+			$atts['hotel'] = $hotel_url;
+		}
+	}
+	if ( '' === $atts['promocion'] && isset( $_GET['pe_promocion'] ) ) {
+		$atts['promocion'] = sanitize_text_field( wp_unslash( $_GET['pe_promocion'] ) );
+	}
+
 	$hoteles = pe_lista_hoteles();
 	$paises = array( 'México', 'Argentina', 'Canadá', 'Colombia', 'USA', 'Otro' );
 

@@ -42,6 +42,20 @@ add_action( 'add_meta_boxes', 'pe_agregar_metabox_hotel' );
 function pe_mostrar_metabox_hotel( $post ) {
 	wp_nonce_field( 'pe_guardar_hotel', 'pe_hotel_nonce' );
 
+	$hotel_guardado = get_post_meta( $post->ID, '_pe_hotel', true );
+
+	echo '<p><label for="pe_hotel_lista"><strong>Hotel de la lista</strong></label><br>';
+	echo '<select name="pe_hotel_lista" id="pe_hotel_lista">';
+	echo '<option value="">Selecciona un hotel</option>';
+	foreach ( pe_lista_hoteles() as $hotel ) {
+		printf(
+			'<option value="%1$s" %2$s>%1$s</option>',
+			esc_attr( $hotel ),
+			selected( $hotel_guardado, $hotel, false )
+		);
+	}
+	echo '</select></p>';
+
 	$precio  = get_post_meta( $post->ID, '_pe_hotel_precio_desde', true );
 	$incluye = get_post_meta( $post->ID, '_pe_hotel_incluye', true );
 
@@ -71,6 +85,13 @@ function pe_guardar_metabox_hotel( $post_id ) {
 	}
 	if ( ! current_user_can( 'edit_post', $post_id ) ) {
 		return;
+	}
+
+	if ( isset( $_POST['pe_hotel_lista'] ) ) {
+		$hotel = sanitize_text_field( wp_unslash( $_POST['pe_hotel_lista'] ) );
+		if ( '' === $hotel || in_array( $hotel, pe_lista_hoteles(), true ) ) {
+			update_post_meta( $post_id, '_pe_hotel', $hotel );
+		}
 	}
 
 	if ( isset( $_POST['pe_hotel_precio_desde'] ) ) {
