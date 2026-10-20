@@ -15,15 +15,16 @@ function pe_formulario_shortcode( $atts ) {
 		'promocion' => '',
 	), $atts );
 
-	// También se puede prellenar desde la dirección: ?pe_hotel=...&pe_promocion=...
-	if ( '' === $atts['hotel'] && isset( $_GET['pe_hotel'] ) ) {
-		$hotel_url = sanitize_text_field( wp_unslash( $_GET['pe_hotel'] ) );
+	// También se puede prellenar desde la dirección: ?pe_reserva_hotel=...&pe_reserva_promo=...
+	// (No usar "pe_hotel": WordPress lo reserva para el tipo de contenido Hoteles.)
+	if ( '' === $atts['hotel'] && isset( $_GET['pe_reserva_hotel'] ) ) {
+		$hotel_url = sanitize_text_field( wp_unslash( $_GET['pe_reserva_hotel'] ) );
 		if ( in_array( $hotel_url, pe_lista_hoteles(), true ) ) {
 			$atts['hotel'] = $hotel_url;
 		}
 	}
-	if ( '' === $atts['promocion'] && isset( $_GET['pe_promocion'] ) ) {
-		$atts['promocion'] = sanitize_text_field( wp_unslash( $_GET['pe_promocion'] ) );
+	if ( '' === $atts['promocion'] && isset( $_GET['pe_reserva_promo'] ) ) {
+		$atts['promocion'] = sanitize_text_field( wp_unslash( $_GET['pe_reserva_promo'] ) );
 	}
 
 	$hoteles = pe_lista_hoteles();
@@ -171,3 +172,40 @@ function pe_procesar_formulario() {
 }
 add_action( 'admin_post_nopriv_pe_enviar_lead', 'pe_procesar_formulario' ); // visitantes
 add_action( 'admin_post_pe_enviar_lead', 'pe_procesar_formulario' );        // con sesión
+
+
+// Dirección de la página que tiene el formulario.
+// Cuando exista la página definitiva, se cambia solo aquí.
+function pe_url_formulario() {
+	return home_url( '/formulario-de-prueba/' );
+}
+
+// Botón "Reservar": [pe_boton_reservar]
+// En una ficha de hotel o una promoción toma el hotel (y la promoción) automáticamente.
+// Texto opcional: [pe_boton_reservar texto="Quiero esta promoción"]
+function pe_boton_reservar_shortcode( $atts ) {
+	$atts = shortcode_atts( array(
+		'texto' => 'Reservar',
+	), $atts );
+
+	$args = array();
+	$post = get_post();
+
+	if ( $post && in_array( $post->post_type, array( 'pe_hotel', 'hot_escape' ), true ) ) {
+		$hotel = get_post_meta( $post->ID, '_pe_hotel', true );
+		if ( '' !== $hotel ) {
+			$args['pe_reserva_hotel'] = $hotel;
+		}
+		if ( 'hot_escape' === $post->post_type ) {
+			$args['pe_reserva_promo'] = $post->post_title;		}
+	}
+
+	$url = add_query_arg( array_map( 'rawurlencode', $args ), pe_url_formulario() );
+
+	return sprintf(
+		'<a class="pe-boton-reservar" href="%s">%s</a>',
+		esc_url( $url ),
+		esc_html( $atts['texto'] )
+	);
+}
+add_shortcode( 'pe_boton_reservar', 'pe_boton_reservar_shortcode' );
