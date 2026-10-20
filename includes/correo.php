@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // Correo al que llegan los avisos. AÚN POR CONFIRMAR.
 function pe_correo_destino() {
-	return '-----@------.com'; 
+	return 'lvelasco@sandos.com'; 
 }
 
 // Envía el aviso de un lead ya guardado. Si falla, el lead sigue guardado.
