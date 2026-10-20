@@ -39,7 +39,37 @@ function pe_formulario_shortcode( $atts ) {
 	ob_start();
 
 	if ( isset( $_GET['pe_error'] ) ) {
-		echo '<p class="pe-mensaje-error">Revisa los datos e inténtalo de nuevo.</p>';
+		$mensajes = array(
+			'sesion'         => 'La página estuvo abierta mucho tiempo. Recárgala e inténtalo de nuevo.',
+			'hotel'          => 'Selecciona un hotel.',
+			'fechas'         => 'Indica las fechas de llegada y salida.',
+			'llegada_pasada' => 'La fecha de llegada no puede ser anterior a hoy.',
+			'salida'         => 'La fecha de salida debe ser posterior a la de llegada.',
+			'nombre'         => 'Escribe tu nombre.',
+			'apellido'       => 'Escribe tu apellido.',
+			'correo'         => 'Escribe un correo electrónico válido.',
+			'correo2'        => 'Los correos no coinciden.',
+			'telefono'       => 'El teléfono debe tener de 10 a 15 dígitos.',
+		);
+
+		$codigos = explode( ',', sanitize_text_field( wp_unslash( $_GET['pe_error'] ) ) );
+		$lista   = array();
+		foreach ( $codigos as $codigo ) {
+			if ( isset( $mensajes[ $codigo ] ) ) {
+				$lista[] = $mensajes[ $codigo ];
+			}
+		}
+
+		echo '<div class="pe-mensaje-error">';
+		echo '<p>Revisa los datos e inténtalo de nuevo:</p>';
+		if ( $lista ) {
+			echo '<ul>';
+			foreach ( $lista as $mensaje ) {
+				echo '<li>' . esc_html( $mensaje ) . '</li>';
+			}
+			echo '</ul>';
+		}
+		echo '</div>';
 	}
 	?>
 	<form class="pe-formulario" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
@@ -130,7 +160,7 @@ function pe_procesar_formulario() {
 	// Llave de seguridad (nonce).
 	if ( ! isset( $_POST['pe_form_nonce'] ) ||
 		! wp_verify_nonce( $_POST['pe_form_nonce'], 'pe_enviar_lead' ) ) {
-		wp_safe_redirect( $error );
+		wp_safe_redirect( add_query_arg( 'pe_error', 'sesion', remove_query_arg( 'pe_error', $volver ) ) );
 		exit;
 	}
 
@@ -149,12 +179,42 @@ function pe_procesar_formulario() {
 	$apellido = isset( $datos['apellido'] ) ? trim( $datos['apellido'] ) : '';
 	$hotel    = isset( $datos['hotel'] ) ? trim( $datos['hotel'] ) : '';
 
-	// Validaciones mínimas: campos obligatorios, correo válido y repetido igual,
-	// teléfono de 10 a 15 dígitos (misma regla del sitio actual).
-	if ( '' === $nombre || '' === $apellido || ! in_array( $hotel, pe_lista_hoteles(), true )
-		|| ! is_email( $correo ) || $correo !== $correo2
-		|| ! preg_match( '/^\d{10,15}$/', $telefono ) ) {
-		wp_safe_redirect( $error );
+	$llegada = isset( $datos['llegada'] ) ? sanitize_text_field( $datos['llegada'] ) : '';
+	$salida  = isset( $datos['salida'] ) ? sanitize_text_field( $datos['salida'] ) : '';
+	$hoy     = current_time( 'Y-m-d' );
+	$formato = '/^\d{4}-\d{2}-\d{2}$/';
+
+	// Validaciones campo por campo. Cada falla agrega un código al aviso.
+	$errores = array();
+
+	if ( ! in_array( $hotel, pe_lista_hoteles(), true ) ) {
+		$errores[] = 'hotel';
+	}
+	if ( ! preg_match( $formato, $llegada ) || ! preg_match( $formato, $salida ) ) {
+		$errores[] = 'fechas';
+	} elseif ( $llegada < $hoy ) {
+		$errores[] = 'llegada_pasada';
+	} elseif ( $salida <= $llegada ) {
+		$errores[] = 'salida';
+	}
+	if ( '' === $nombre ) {
+		$errores[] = 'nombre';
+	}
+	if ( '' === $apellido ) {
+		$errores[] = 'apellido';
+	}
+	if ( ! is_email( $correo ) ) {
+		$errores[] = 'correo';
+	} elseif ( $correo !== $correo2 ) {
+		$errores[] = 'correo2';
+	}
+	// Teléfono de 10 a 15 dígitos (misma regla del sitio actual).
+	if ( ! preg_match( '/^\d{10,15}$/', $telefono ) ) {
+		$errores[] = 'telefono';
+	}
+
+	if ( $errores ) {
+		wp_safe_redirect( add_query_arg( 'pe_error', implode( ',', $errores ), remove_query_arg( 'pe_error', $volver ) ) );
 		exit;
 	}
 
