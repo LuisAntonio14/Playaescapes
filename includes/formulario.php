@@ -30,6 +30,21 @@ function pe_formulario_shortcode( $atts ) {
 	$hoteles = pe_lista_hoteles();
 	$paises = array( 'México', 'Argentina', 'Canadá', 'Colombia', 'USA', 'Otro' );
 
+	// Si viene de un error, recupera lo que el cliente ya había escrito.
+	$previos = array();
+	if ( isset( $_GET['pe_datos'] ) ) {
+		$token     = preg_replace( '/[^A-Za-z0-9]/', '', wp_unslash( $_GET['pe_datos'] ) );
+		$guardados = get_transient( 'pe_form_' . $token );
+		if ( is_array( $guardados ) ) {
+			$previos = $guardados;
+		}
+	}
+	if ( isset( $previos['hotel'] ) && in_array( $previos['hotel'], $hoteles, true ) ) {
+		$atts['hotel'] = $previos['hotel'];
+	}
+	$valor = function ( $campo, $defecto = '' ) use ( $previos ) {
+		return ( isset( $previos[ $campo ] ) && '' !== $previos[ $campo ] ) ? $previos[ $campo ] : $defecto;
+	};
 	// Las UTM de la campaña viajan ocultas con el lead.
 	$utm = array();
 	foreach ( array( 'utm_source', 'utm_medium', 'utm_campaign' ) as $clave ) {
@@ -76,8 +91,8 @@ function pe_formulario_shortcode( $atts ) {
 		<input type="hidden" name="action" value="pe_enviar_lead">
 		<?php wp_nonce_field( 'pe_enviar_lead', 'pe_form_nonce' ); ?>
 		<input type="hidden" name="promocion" value="<?php echo esc_attr( $atts['promocion'] ); ?>">
-		<?php foreach ( $utm as $clave => $valor ) : ?>
-			<input type="hidden" name="<?php echo esc_attr( $clave ); ?>" value="<?php echo esc_attr( $valor ); ?>">
+		<?php foreach ( $utm as $clave => $valor_utm ) : ?>
+			<input type="hidden" name="<?php echo esc_attr( $clave ); ?>" value="<?php echo esc_attr( $valor_utm ); ?>">
 		<?php endforeach; ?>
 
 		<!-- Campo trampa contra spam: las personas no lo ven ni lo llenan. -->
@@ -94,52 +109,52 @@ function pe_formulario_shortcode( $atts ) {
 				<?php endforeach; ?>
 			</select>
 		</p>
-		<p>
+				<p>
 			<label for="pe_f_llegada">Fecha de llegada</label>
-			<input type="date" name="llegada" id="pe_f_llegada" required>
+			<input type="date" name="llegada" id="pe_f_llegada" value="<?php echo esc_attr( $valor( 'llegada' ) ); ?>" required>
 		</p>
 		<p>
 			<label for="pe_f_salida">Fecha de salida</label>
-			<input type="date" name="salida" id="pe_f_salida" required>
+			<input type="date" name="salida" id="pe_f_salida" value="<?php echo esc_attr( $valor( 'salida' ) ); ?>" required>
 		</p>
 		<p>
 			<label for="pe_f_adultos">Adultos</label>
-			<input type="number" name="adultos" id="pe_f_adultos" min="1" max="20" value="2" required>
+			<input type="number" name="adultos" id="pe_f_adultos" min="1" max="20" value="<?php echo esc_attr( $valor( 'adultos', '2' ) ); ?>" required>
 		</p>
 		<p>
 			<label for="pe_f_ninos">Niños</label>
-			<input type="number" name="ninos" id="pe_f_ninos" min="0" max="10" value="0">
+			<input type="number" name="ninos" id="pe_f_ninos" min="0" max="10" value="<?php echo esc_attr( $valor( 'ninos', '0' ) ); ?>">
 		</p>
 		<p>
 			<label for="pe_f_habitaciones">Habitaciones</label>
-			<input type="number" name="habitaciones" id="pe_f_habitaciones" min="1" max="10" value="1" required>
+			<input type="number" name="habitaciones" id="pe_f_habitaciones" min="1" max="10" value="<?php echo esc_attr( $valor( 'habitaciones', '1' ) ); ?>" required>
 		</p>
 		<p>
 			<label for="pe_f_nombre">Nombre</label>
-			<input type="text" name="nombre" id="pe_f_nombre" required>
+			<input type="text" name="nombre" id="pe_f_nombre" value="<?php echo esc_attr( $valor( 'nombre' ) ); ?>" required>
 		</p>
 		<p>
 			<label for="pe_f_apellido">Apellido</label>
-			<input type="text" name="apellido" id="pe_f_apellido" required>
+			<input type="text" name="apellido" id="pe_f_apellido" value="<?php echo esc_attr( $valor( 'apellido' ) ); ?>" required>
 		</p>
 		<p>
 			<label for="pe_f_correo">Correo electrónico</label>
-			<input type="email" name="correo" id="pe_f_correo" required>
+			<input type="email" name="correo" id="pe_f_correo" value="<?php echo esc_attr( $valor( 'correo' ) ); ?>" required>
 		</p>
 		<p>
 			<label for="pe_f_correo2">Confirma tu correo</label>
-			<input type="email" name="correo2" id="pe_f_correo2" required>
+			<input type="email" name="correo2" id="pe_f_correo2" value="<?php echo esc_attr( $valor( 'correo2' ) ); ?>" required>
 		</p>
 		<p>
 			<label for="pe_f_telefono">Teléfono</label>
-			<input type="tel" name="telefono" id="pe_f_telefono" required>
+			<input type="tel" name="telefono" id="pe_f_telefono" value="<?php echo esc_attr( $valor( 'telefono' ) ); ?>" required>
 		</p>
 		<p>
 			<label for="pe_f_pais">País de residencia</label>
 			<select name="pais" id="pe_f_pais" required>
 				<option value="">Selecciona un país</option>
 				<?php foreach ( $paises as $pais ) : ?>
-					<option value="<?php echo esc_attr( $pais ); ?>"><?php echo esc_html( $pais ); ?></option>
+					<option value="<?php echo esc_attr( $pais ); ?>" <?php selected( $valor( 'pais' ), $pais ); ?>><?php echo esc_html( $pais ); ?></option>
 				<?php endforeach; ?>
 			</select>
 		</p>
@@ -214,7 +229,49 @@ function pe_procesar_formulario() {
 	}
 
 	if ( $errores ) {
-		wp_safe_redirect( add_query_arg( 'pe_error', implode( ',', $errores ), remove_query_arg( 'pe_error', $volver ) ) );
+		// Guarda lo escrito 10 minutos para no hacer que el cliente lo llene de nuevo.
+		// En la dirección solo viaja un código aleatorio, nunca los datos.
+		$token   = wp_generate_password( 20, false );
+		$guardar = array();
+		foreach ( array( 'llegada', 'salida', 'adultos', 'ninos', 'habitaciones', 'nombre', 'apellido', 'correo', 'correo2', 'telefono', 'pais', 'hotel' ) as $campo ) {
+			$guardar[ $campo ] = isset( $datos[ $campo ] ) ? sanitize_text_field( $datos[ $campo ] ) : '';
+		}
+		set_transient( 'pe_form_' . $token, $guardar, 10 * MINUTE_IN_SECONDS );
+
+		$destino = add_query_arg(
+			array(
+				'pe_error' => implode( ',', $errores ),
+				'pe_datos' => $token,
+			),
+			remove_query_arg( array( 'pe_error', 'pe_datos' ), $volver )
+		);
+		wp_safe_redirect( $destino );
+		exit;
+	}
+
+	// Evita duplicados: misma solicitud (correo, hotel y fechas) en los últimos 10 minutos.
+	$duplicado = get_posts( array(
+		'post_type'      => 'pe_lead',
+		'post_status'    => 'publish',
+		'posts_per_page' => 1,
+		'fields'         => 'ids',
+		'no_found_rows'  => true,
+		'date_query'     => array(
+			array(
+				'column' => 'post_date_gmt',
+				'after'  => gmdate( 'Y-m-d H:i:s', time() - 10 * MINUTE_IN_SECONDS ),
+			),
+		),
+		'meta_query'     => array(
+			array( 'key' => '_pe_lead_correo', 'value' => $correo ),
+			array( 'key' => '_pe_lead_hotel', 'value' => $hotel ),
+			array( 'key' => '_pe_lead_llegada', 'value' => $llegada ),
+			array( 'key' => '_pe_lead_salida', 'value' => $salida ),
+		),
+	) );
+
+	if ( $duplicado ) {
+		wp_safe_redirect( home_url( '/gracias/' ) );
 		exit;
 	}
 
