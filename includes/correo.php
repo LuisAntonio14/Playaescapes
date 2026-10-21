@@ -7,9 +7,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Correo al que llegan los avisos. AÚN POR CONFIRMAR.
+// Correo al que llegan los avisos: se configura en Ajustes > PlayaEscapes.
+// Si está vacío o no es válido, no se envía aviso (el lead queda guardado igual).
 function pe_correo_destino() {
-	return 'lvelasco@sandos.com'; 
+	$correo = pe_ajuste( 'correo_avisos' );
+	return is_email( $correo ) ? $correo : '';
 }
 
 // Envía el aviso de un lead ya guardado. Si falla, el lead sigue guardado.
