@@ -144,3 +144,78 @@ function pe_contenido_columnas_leads( $columna, $post_id ) {
 	}
 }
 add_action( 'manage_pe_lead_posts_custom_column', 'pe_contenido_columnas_leads', 10, 2 );
+
+
+// Botón "Exportar a Excel (CSV)" arriba de la lista de Leads (solo administradores).
+function pe_boton_exportar_leads( $post_type ) {
+	if ( 'pe_lead' !== $post_type || ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	$url = wp_nonce_url( admin_url( 'admin-post.php?action=pe_exportar_leads' ), 'pe_exportar_leads' );
+	printf( '<a href="%s" class="button">Exportar a Excel (CSV)</a>', esc_url( $url ) );
+}
+add_action( 'restrict_manage_posts', 'pe_boton_exportar_leads' );
+
+// Evita que Excel interprete como fórmula un texto escrito en el formulario.
+function pe_csv_celda( $valor ) {
+	$valor = (string) $valor;
+	if ( '' !== $valor && in_array( $valor[0], array( '=', '+', '-', '@' ), true ) ) {
+		$valor = "'" . $valor;
+	}
+	return $valor;
+}
+
+// Genera y descarga el archivo CSV con todos los leads.
+function pe_exportar_leads() {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( 'No tienes permiso para exportar.' );
+	}
+	check_admin_referer( 'pe_exportar_leads' );
+
+	$campos = array(
+		'hotel'        => 'Hotel',
+		'llegada'      => 'Llegada',
+		'salida'       => 'Salida',
+		'adultos'      => 'Adultos',
+		'ninos'        => 'Niños',
+		'habitaciones' => 'Habitaciones',
+		'nombre'       => 'Nombre',
+		'apellido'     => 'Apellido',
+		'correo'       => 'Correo',
+		'telefono'     => 'Teléfono',
+		'pais'         => 'País',
+		'promocion'    => 'Promoción',
+		'utm_source'   => 'UTM source',
+		'utm_medium'   => 'UTM medium',
+		'utm_campaign' => 'UTM campaign',
+	);
+
+	$ids = get_posts( array(
+		'post_type'      => 'pe_lead',
+		'post_status'    => 'publish',
+		'posts_per_page' => -1,
+		'fields'         => 'ids',
+		'orderby'        => 'date',
+		'order'          => 'DESC',
+	) );
+
+	nocache_headers();
+	header( 'Content-Type: text/csv; charset=UTF-8' );
+	header( 'Content-Disposition: attachment; filename="leads-playaescapes-' . current_time( 'Y-m-d' ) . '.csv"' );
+
+	$salida = fopen( 'php://output', 'w' );
+	fwrite( $salida, "\xEF\xBB\xBF" ); // Para que Excel muestre bien los acentos.
+	fputcsv( $salida, array_merge( array( 'Recibido' ), array_values( $campos ) ) );
+
+	foreach ( $ids as $id ) {
+		$fila = array( get_the_date( 'Y-m-d H:i', $id ) );
+		foreach ( array_keys( $campos ) as $campo ) {
+			$fila[] = pe_csv_celda( get_post_meta( $id, '_pe_lead_' . $campo, true ) );
+		}
+		fputcsv( $salida, $fila );
+	}
+
+	fclose( $salida );
+	exit;
+}
+add_action( 'admin_post_pe_exportar_leads', 'pe_exportar_leads' );
