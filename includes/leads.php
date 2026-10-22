@@ -98,3 +98,49 @@ function pe_mostrar_metabox_lead( $post ) {
 	}
 	echo '</tbody></table>';
 }
+
+
+// Columnas de la lista de Leads en el administrador.
+function pe_columnas_leads( $columnas ) {
+	$nuevas = array();
+	if ( isset( $columnas['cb'] ) ) {
+		$nuevas['cb'] = $columnas['cb'];
+	}
+	$nuevas['title']           = 'Nombre';
+	$nuevas['pe_col_hotel']    = 'Hotel';
+	$nuevas['pe_col_fechas']   = 'Fechas';
+	$nuevas['pe_col_telefono'] = 'Teléfono';
+	$nuevas['pe_col_promo']    = 'Promoción';
+	$nuevas['pe_col_origen']   = 'Origen (UTM)';
+	$nuevas['date']            = 'Recibido';
+	return $nuevas;
+}
+add_filter( 'manage_pe_lead_posts_columns', 'pe_columnas_leads' );
+
+function pe_contenido_columnas_leads( $columna, $post_id ) {
+	$dato = function ( $campo ) use ( $post_id ) {
+		return get_post_meta( $post_id, '_pe_lead_' . $campo, true );
+	};
+
+	switch ( $columna ) {
+		case 'pe_col_hotel':
+			echo esc_html( $dato( 'hotel' ) );
+			break;
+		case 'pe_col_fechas':
+			if ( $dato( 'llegada' ) || $dato( 'salida' ) ) {
+				echo esc_html( $dato( 'llegada' ) . ' a ' . $dato( 'salida' ) );
+			}
+			break;
+		case 'pe_col_telefono':
+			echo esc_html( $dato( 'telefono' ) );
+			break;
+		case 'pe_col_promo':
+			echo esc_html( $dato( 'promocion' ) );
+			break;
+		case 'pe_col_origen':
+			$partes = array_filter( array( $dato( 'utm_source' ), $dato( 'utm_medium' ), $dato( 'utm_campaign' ) ) );
+			echo esc_html( implode( ' / ', $partes ) );
+			break;
+	}
+}
+add_action( 'manage_pe_lead_posts_custom_column', 'pe_contenido_columnas_leads', 10, 2 );

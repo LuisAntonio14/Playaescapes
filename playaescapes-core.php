@@ -2,7 +2,7 @@
 /**
  * Plugin Name: PlayaEscapes Core
  * Description: Funcionalidad de PlayaEscapes (promociones, hoteles, formulario y leads).
- * Version: 0.6.0
+ * Version: 0.7.0
  * Text Domain: playaescapes-core
  */
 
