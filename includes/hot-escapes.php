@@ -42,12 +42,7 @@ function pe_mostrar_metabox_hot_escape( $post ) {
 	wp_nonce_field( 'pe_guardar_hot_escape', 'pe_hot_escape_nonce' );
 
 	$hotel_guardado = get_post_meta( $post->ID, '_pe_hotel', true );
-	$hoteles        = array(
-		'Sandos Cancún',
-		'Sandos Caracol Eco Resort',
-		'Sandos Playacar',
-		'Sandos Finisterra',
-	);
+	$hoteles        = pe_lista_hoteles();
 
 	echo '<p><label for="pe_hotel"><strong>Hotel</strong></label><br>';
 	echo '<select name="pe_hotel" id="pe_hotel">';
@@ -99,12 +94,13 @@ function pe_guardar_metabox_hot_escape( $post_id ) {
 	if ( ! current_user_can( 'edit_post', $post_id ) ) {
 		return;
 	}
+
+	// Solo se acepta un hotel de la lista única (o ninguno).
 	if ( isset( $_POST['pe_hotel'] ) ) {
-		update_post_meta(
-			$post_id,
-			'_pe_hotel',
-			sanitize_text_field( wp_unslash( $_POST['pe_hotel'] ) )
-		);
+		$hotel = sanitize_text_field( wp_unslash( $_POST['pe_hotel'] ) );
+		if ( '' === $hotel || in_array( $hotel, pe_lista_hoteles(), true ) ) {
+			update_post_meta( $post_id, '_pe_hotel', $hotel );
+		}
 	}
 
 	if ( isset( $_POST['pe_precio_desde'] ) ) {
@@ -176,7 +172,6 @@ function pe_filtrar_hot_escapes_vigentes( $query ) {
 }
 add_action( 'pre_get_posts', 'pe_filtrar_hot_escapes_vigentes' );
 
-
 // Columnas de la lista de Hot Escapes en el administrador.
 function pe_columnas_hot_escapes( $columnas ) {
 	$nuevas = array();
@@ -199,7 +194,12 @@ function pe_contenido_columnas_hot_escapes( $columna, $post_id ) {
 
 	switch ( $columna ) {
 		case 'pe_col_hotel':
-			echo esc_html( get_post_meta( $post_id, '_pe_hotel', true ) );
+			$hotel = get_post_meta( $post_id, '_pe_hotel', true );
+			if ( '' === $hotel ) {
+				echo '<span style="color:#b32d2e;">Sin hotel</span>';
+			} else {
+				echo esc_html( $hotel );
+			}
 			break;
 
 		case 'pe_col_precio':

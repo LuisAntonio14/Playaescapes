@@ -14,9 +14,9 @@ function pe_ajuste( $clave ) {
 	return ( is_array( $ajustes ) && isset( $ajustes[ $clave ] ) ) ? $ajustes[ $clave ] : '';
 }
 
-// Dirección de la página del Aviso de privacidad elegida en Ajustes. Vacío si no hay.
-function pe_url_aviso_privacidad() {
-	$pagina = absint( pe_ajuste( 'aviso_privacidad' ) );
+// Dirección de una página elegida en Ajustes (aviso_privacidad o terminos). Vacío si no hay.
+function pe_url_pagina_ajuste( $clave ) {
+	$pagina = absint( pe_ajuste( $clave ) );
 	if ( ! $pagina || 'publish' !== get_post_status( $pagina ) ) {
 		return '';
 	}
@@ -24,15 +24,30 @@ function pe_url_aviso_privacidad() {
 }
 
 // Leyenda para debajo de los formularios. Texto POR CONFIRMAR con Marketing.
-function pe_leyenda_privacidad() {
-	$url = pe_url_aviso_privacidad();
-	if ( '' === $url ) {
+// $con_terminos = true agrega el enlace a Términos y condiciones (formulario de reserva).
+function pe_leyenda_privacidad( $con_terminos = false ) {
+	$aviso    = pe_url_pagina_ajuste( 'aviso_privacidad' );
+	$terminos = $con_terminos ? pe_url_pagina_ajuste( 'terminos' ) : '';
+
+	$partes = array();
+	if ( '' !== $aviso ) {
+		$partes[] = sprintf(
+			'que sean tratados conforme a nuestro <a href="%s" target="_blank" rel="noopener">Aviso de privacidad</a>',
+			esc_url( $aviso )
+		);
+	}
+	if ( '' !== $terminos ) {
+		$partes[] = sprintf(
+			'los <a href="%s" target="_blank" rel="noopener">Términos y condiciones</a> de la promoción',
+			esc_url( $terminos )
+		);
+	}
+
+	if ( ! $partes ) {
 		return '';
 	}
-	return sprintf(
-		'<p class="pe-leyenda-privacidad">Al enviar tus datos aceptas que sean tratados conforme a nuestro <a href="%s" target="_blank" rel="noopener">Aviso de privacidad</a>.</p>',
-		esc_url( $url )
-	);
+
+	return '<p class="pe-leyenda-privacidad">Al enviar tus datos aceptas ' . implode( ', así como ', $partes ) . '.</p>';
 }
 
 // Agrega "PlayaEscapes" dentro del menú Ajustes (solo administradores).
@@ -63,6 +78,7 @@ function pe_ajustes_limpiar( $entrada ) {
 		'whatsapp_numero'  => isset( $entrada['whatsapp_numero'] ) ? preg_replace( '/\D/', '', $entrada['whatsapp_numero'] ) : '',
 		'whatsapp_mensaje' => isset( $entrada['whatsapp_mensaje'] ) ? sanitize_text_field( $entrada['whatsapp_mensaje'] ) : '',
 		'aviso_privacidad' => isset( $entrada['aviso_privacidad'] ) ? absint( $entrada['aviso_privacidad'] ) : 0,
+		'terminos'         => isset( $entrada['terminos'] ) ? absint( $entrada['terminos'] ) : 0,
 	);
 }
 
@@ -110,6 +126,21 @@ function pe_ajustes_pagina() {
 						) );
 						?>
 						<p class="description">Se enlaza debajo de los formularios de reserva y de contacto.</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="pe_terminos">Página de Términos y condiciones</label></th>
+					<td>
+						<?php
+						wp_dropdown_pages( array(
+							'name'              => 'pe_ajustes[terminos]',
+							'id'                => 'pe_terminos',
+							'selected'          => absint( pe_ajuste( 'terminos' ) ),
+							'show_option_none'  => '— Ninguna —',
+							'option_none_value' => '0',
+						) );
+						?>
+						<p class="description">Se enlaza debajo del formulario de reserva.</p>
 					</td>
 				</tr>
 			</table>
