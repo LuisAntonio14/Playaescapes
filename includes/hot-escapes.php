@@ -175,3 +175,63 @@ function pe_filtrar_hot_escapes_vigentes( $query ) {
 	) );
 }
 add_action( 'pre_get_posts', 'pe_filtrar_hot_escapes_vigentes' );
+
+
+// Columnas de la lista de Hot Escapes en el administrador.
+function pe_columnas_hot_escapes( $columnas ) {
+	$nuevas = array();
+	if ( isset( $columnas['cb'] ) ) {
+		$nuevas['cb'] = $columnas['cb'];
+	}
+	$nuevas['title']           = 'Promoción';
+	$nuevas['pe_col_hotel']    = 'Hotel';
+	$nuevas['pe_col_precio']   = 'Precio desde';
+	$nuevas['pe_col_vigencia'] = 'Vigencia';
+	$nuevas['pe_col_estado']   = 'Estado';
+	$nuevas['date']            = 'Fecha';
+	return $nuevas;
+}
+add_filter( 'manage_hot_escape_posts_columns', 'pe_columnas_hot_escapes' );
+
+function pe_contenido_columnas_hot_escapes( $columna, $post_id ) {
+	$inicio = get_post_meta( $post_id, '_pe_vigencia_inicio', true );
+	$fin    = get_post_meta( $post_id, '_pe_vigencia_fin', true );
+
+	switch ( $columna ) {
+		case 'pe_col_hotel':
+			echo esc_html( get_post_meta( $post_id, '_pe_hotel', true ) );
+			break;
+
+		case 'pe_col_precio':
+			$precio = get_post_meta( $post_id, '_pe_precio_desde', true );
+			if ( '' !== $precio ) {
+				echo esc_html( '$' . number_format_i18n( (int) $precio ) . ' MXN' );
+			}
+			break;
+
+		case 'pe_col_vigencia':
+			if ( '' === $inicio && '' === $fin ) {
+				echo 'Sin límite';
+			} elseif ( '' === $fin ) {
+				echo esc_html( 'Desde ' . $inicio );
+			} elseif ( '' === $inicio ) {
+				echo esc_html( 'Hasta ' . $fin );
+			} else {
+				echo esc_html( $inicio . ' a ' . $fin );
+			}
+			break;
+
+		case 'pe_col_estado':
+			// Misma regla que el filtro del sitio público.
+			$hoy = current_time( 'Y-m-d' );
+			if ( '' !== $fin && $fin < $hoy ) {
+				echo '<span style="color:#b32d2e;font-weight:bold;">Vencida</span>';
+			} elseif ( '' !== $inicio && $inicio > $hoy ) {
+				echo '<span style="color:#996800;font-weight:bold;">Próxima</span>';
+			} else {
+				echo '<span style="color:#008a20;font-weight:bold;">Vigente</span>';
+			}
+			break;
+	}
+}
+add_action( 'manage_hot_escape_posts_custom_column', 'pe_contenido_columnas_hot_escapes', 10, 2 );
