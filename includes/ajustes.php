@@ -14,6 +14,27 @@ function pe_ajuste( $clave ) {
 	return ( is_array( $ajustes ) && isset( $ajustes[ $clave ] ) ) ? $ajustes[ $clave ] : '';
 }
 
+// Dirección de la página del Aviso de privacidad elegida en Ajustes. Vacío si no hay.
+function pe_url_aviso_privacidad() {
+	$pagina = absint( pe_ajuste( 'aviso_privacidad' ) );
+	if ( ! $pagina || 'publish' !== get_post_status( $pagina ) ) {
+		return '';
+	}
+	return get_permalink( $pagina );
+}
+
+// Leyenda para debajo de los formularios. Texto POR CONFIRMAR con Marketing.
+function pe_leyenda_privacidad() {
+	$url = pe_url_aviso_privacidad();
+	if ( '' === $url ) {
+		return '';
+	}
+	return sprintf(
+		'<p class="pe-leyenda-privacidad">Al enviar tus datos aceptas que sean tratados conforme a nuestro <a href="%s" target="_blank" rel="noopener">Aviso de privacidad</a>.</p>',
+		esc_url( $url )
+	);
+}
+
 // Agrega "PlayaEscapes" dentro del menú Ajustes (solo administradores).
 function pe_ajustes_menu() {
 	add_options_page(
@@ -41,6 +62,7 @@ function pe_ajustes_limpiar( $entrada ) {
 		'correo_avisos'    => isset( $entrada['correo_avisos'] ) ? sanitize_email( $entrada['correo_avisos'] ) : '',
 		'whatsapp_numero'  => isset( $entrada['whatsapp_numero'] ) ? preg_replace( '/\D/', '', $entrada['whatsapp_numero'] ) : '',
 		'whatsapp_mensaje' => isset( $entrada['whatsapp_mensaje'] ) ? sanitize_text_field( $entrada['whatsapp_mensaje'] ) : '',
+		'aviso_privacidad' => isset( $entrada['aviso_privacidad'] ) ? absint( $entrada['aviso_privacidad'] ) : 0,
 	);
 }
 
@@ -73,6 +95,21 @@ function pe_ajustes_pagina() {
 					<td>
 						<input type="text" class="large-text" id="pe_whatsapp_mensaje" name="pe_ajustes[whatsapp_mensaje]" value="<?php echo esc_attr( pe_ajuste( 'whatsapp_mensaje' ) ); ?>">
 						<p class="description">Texto con el que se abre la conversación. Puede quedar vacío.</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="pe_aviso_privacidad">Página del Aviso de privacidad</label></th>
+					<td>
+						<?php
+						wp_dropdown_pages( array(
+							'name'              => 'pe_ajustes[aviso_privacidad]',
+							'id'                => 'pe_aviso_privacidad',
+							'selected'          => absint( pe_ajuste( 'aviso_privacidad' ) ),
+							'show_option_none'  => '— Ninguna —',
+							'option_none_value' => '0',
+						) );
+						?>
+						<p class="description">Se enlaza debajo de los formularios de reserva y de contacto.</p>
 					</td>
 				</tr>
 			</table>

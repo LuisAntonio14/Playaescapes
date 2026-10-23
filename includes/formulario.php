@@ -158,6 +158,7 @@ function pe_formulario_shortcode( $atts ) {
 				<?php endforeach; ?>
 			</select>
 		</p>
+		<?php echo pe_leyenda_privacidad(); ?>
 		<p>
 			<button type="submit">Proceder a reservar</button>
 		</p>
