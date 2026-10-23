@@ -108,3 +108,39 @@ function pe_guardar_metabox_hotel( $post_id ) {
 	}
 }
 add_action( 'save_post_pe_hotel', 'pe_guardar_metabox_hotel' );
+
+
+// Columnas de la lista de Hoteles en el administrador.
+function pe_columnas_hoteles( $columnas ) {
+	$nuevas = array();
+	if ( isset( $columnas['cb'] ) ) {
+		$nuevas['cb'] = $columnas['cb'];
+	}
+	$nuevas['title']         = 'Hotel';
+	$nuevas['pe_col_lista']  = 'Hotel de la lista';
+	$nuevas['pe_col_precio'] = 'Precio desde';
+	$nuevas['date']          = 'Fecha';
+	return $nuevas;
+}
+add_filter( 'manage_pe_hotel_posts_columns', 'pe_columnas_hoteles' );
+
+function pe_contenido_columnas_hoteles( $columna, $post_id ) {
+	switch ( $columna ) {
+		case 'pe_col_lista':
+			$hotel = get_post_meta( $post_id, '_pe_hotel', true );
+			if ( '' === $hotel ) {
+				echo '<span style="color:#b32d2e;">Sin ligar</span>';
+			} else {
+				echo esc_html( $hotel );
+			}
+			break;
+
+		case 'pe_col_precio':
+			$precio = get_post_meta( $post_id, '_pe_hotel_precio_desde', true );
+			if ( '' !== $precio ) {
+				echo esc_html( '$' . number_format_i18n( (int) $precio ) . ' MXN' );
+			}
+			break;
+	}
+}
+add_action( 'manage_pe_hotel_posts_custom_column', 'pe_contenido_columnas_hoteles', 10, 2 );
