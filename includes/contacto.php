@@ -235,6 +235,30 @@ function pe_procesar_contacto() {
 		exit;
 	}
 
+	// Evita duplicados: mismo correo y mismo mensaje en los últimos 10 minutos.
+	$duplicada = get_posts( array(
+		'post_type'      => 'pe_consulta',
+		'post_status'    => 'publish',
+		'posts_per_page' => 1,
+		'fields'         => 'ids',
+		'no_found_rows'  => true,
+		'date_query'     => array(
+			array(
+				'column' => 'post_date_gmt',
+				'after'  => gmdate( 'Y-m-d H:i:s', time() - 10 * MINUTE_IN_SECONDS ),
+			),
+		),
+		'meta_query'     => array(
+			array( 'key' => '_pe_consulta_correo', 'value' => $correo ),
+			array( 'key' => '_pe_consulta_mensaje', 'value' => sanitize_textarea_field( $mensaje ) ),
+		),
+	) );
+
+	if ( $duplicada ) {
+		wp_safe_redirect( add_query_arg( 'pe_contacto_ok', '1', $volver ) . '#pe-contacto' );
+		exit;
+	}
+
 	$datos['telefono'] = $telefono;
 	$id = pe_crear_consulta( $datos );
 
