@@ -165,6 +165,7 @@ function pe_contacto_shortcode() {
 			<label for="pe_c_mensaje">Mensaje</label>
 			<textarea name="mensaje" id="pe_c_mensaje" rows="5" maxlength="2000" required><?php echo esc_textarea( $previo( 'mensaje' ) ); ?></textarea>
 		</p>
+		<?php echo pe_leyenda_privacidad(); ?>
 		<p>
 			<button type="submit">Enviar consulta</button>
 		</p>
