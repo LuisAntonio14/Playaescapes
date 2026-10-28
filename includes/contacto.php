@@ -313,4 +313,4 @@ function pe_contenido_columnas_consultas( $columna, $post_id ) {
 			break;
 	}
 }
-add_action( 'manage_pe_consulta_posts_custom_column', 'pe_contenido_columnas_consultas', 10, 2 );
+add_action( 'manage_pe_consulta_posts_custom_column', 'pe_contenido_columnas_consultas', 10, 2 ); 
