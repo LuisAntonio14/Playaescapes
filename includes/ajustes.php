@@ -50,6 +50,17 @@ function pe_leyenda_privacidad( $con_terminos = false ) {
 	return '<p class="pe-leyenda-privacidad">Al enviar tus datos aceptas ' . implode( ', así como ', $partes ) . '.</p>';
 }
 
+// Teléfono de contacto tal como se muestra en el sitio (Ajustes > PlayaEscapes).
+function pe_telefono_texto() {
+	return pe_ajuste( 'telefono' );
+}
+
+// Enlace "tel:" para que el teléfono se pueda marcar desde el celular.
+function pe_telefono_enlace() {
+	$digitos = preg_replace( '/[^\d+]/', '', pe_ajuste( 'telefono' ) );
+	return '' !== $digitos ? 'tel:' . $digitos : '';
+}
+
 // Agrega "PlayaEscapes" dentro del menú Ajustes (solo administradores).
 function pe_ajustes_menu() {
 	add_options_page(
@@ -79,6 +90,7 @@ function pe_ajustes_limpiar( $entrada ) {
 		'whatsapp_mensaje' => isset( $entrada['whatsapp_mensaje'] ) ? sanitize_text_field( $entrada['whatsapp_mensaje'] ) : '',
 		'aviso_privacidad' => isset( $entrada['aviso_privacidad'] ) ? absint( $entrada['aviso_privacidad'] ) : 0,
 		'terminos'         => isset( $entrada['terminos'] ) ? absint( $entrada['terminos'] ) : 0,
+		'telefono'         => isset( $entrada['telefono'] ) ? sanitize_text_field( $entrada['telefono'] ) : '',
 	);
 }
 
@@ -126,6 +138,13 @@ function pe_ajustes_pagina() {
 						) );
 						?>
 						<p class="description">Se enlaza debajo de los formularios de reserva y de contacto.</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="pe_telefono">Teléfono de contacto</label></th>
+					<td>
+						<input type="text" class="regular-text" id="pe_telefono" name="pe_ajustes[telefono]" value="<?php echo esc_attr( pe_ajuste( 'telefono' ) ); ?>">
+						<p class="description">Se muestra en el encabezado tal como lo escribas. Ejemplo de formato: +52 (998) 000-0000.</p>
 					</td>
 				</tr>
 				<tr>
