@@ -61,6 +61,28 @@ function pe_telefono_enlace() {
 	return '' !== $digitos ? 'tel:' . $digitos : '';
 }
 
+// Teléfonos por país (Ajustes > PlayaEscapes). Una línea por país con el formato "País: número".
+// Devuelve una lista con el país, el número tal como se escribió y su enlace "tel:".
+function pe_telefonos_paises() {
+	$lista  = array();
+	$lineas = preg_split( '/\r\n|\r|\n/', pe_ajuste( 'telefonos_paises' ) );
+
+	foreach ( $lineas as $linea ) {
+		$partes = array_map( 'trim', explode( ':', $linea, 2 ) );
+		if ( 2 !== count( $partes ) || '' === $partes[0] || '' === $partes[1] ) {
+			continue;
+		}
+		$digitos = preg_replace( '/[^\d+]/', '', $partes[1] );
+		$lista[] = array(
+			'pais'   => $partes[0],
+			'numero' => $partes[1],
+			'enlace' => '' !== $digitos ? 'tel:' . $digitos : '',
+		);
+	}
+
+	return $lista;
+}
+
 // Agrega "PlayaEscapes" dentro del menú Ajustes (solo administradores).
 function pe_ajustes_menu() {
 	add_options_page(
@@ -91,6 +113,11 @@ function pe_ajustes_limpiar( $entrada ) {
 		'aviso_privacidad' => isset( $entrada['aviso_privacidad'] ) ? absint( $entrada['aviso_privacidad'] ) : 0,
 		'terminos'         => isset( $entrada['terminos'] ) ? absint( $entrada['terminos'] ) : 0,
 		'telefono'         => isset( $entrada['telefono'] ) ? sanitize_text_field( $entrada['telefono'] ) : '',
+		'telefonos_paises' => isset( $entrada['telefonos_paises'] ) ? sanitize_textarea_field( $entrada['telefonos_paises'] ) : '',
+		'correo_contacto'  => isset( $entrada['correo_contacto'] ) ? sanitize_email( $entrada['correo_contacto'] ) : '',
+		'direccion'        => isset( $entrada['direccion'] ) ? sanitize_textarea_field( $entrada['direccion'] ) : '',
+		'facebook'         => isset( $entrada['facebook'] ) ? esc_url_raw( $entrada['facebook'] ) : '',
+		'instagram'        => isset( $entrada['instagram'] ) ? esc_url_raw( $entrada['instagram'] ) : '',
 	);
 }
 
@@ -145,6 +172,39 @@ function pe_ajustes_pagina() {
 					<td>
 						<input type="text" class="regular-text" id="pe_telefono" name="pe_ajustes[telefono]" value="<?php echo esc_attr( pe_ajuste( 'telefono' ) ); ?>">
 						<p class="description">Se muestra en el encabezado tal como lo escribas. Ejemplo de formato: +52 (998) 000-0000.</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="pe_telefonos_paises">Teléfonos por país</label></th>
+					<td>
+						<textarea class="large-text" rows="5" id="pe_telefonos_paises" name="pe_ajustes[telefonos_paises]"><?php echo esc_textarea( pe_ajuste( 'telefonos_paises' ) ); ?></textarea>
+						<p class="description">Uno por línea, con el formato <code>País: número</code>. Se mostrará en la página de Contacto.</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="pe_correo_contacto">Correo de contacto (público)</label></th>
+					<td>
+						<input type="email" class="regular-text" id="pe_correo_contacto" name="pe_ajustes[correo_contacto]" value="<?php echo esc_attr( pe_ajuste( 'correo_contacto' ) ); ?>">
+						<p class="description">Se muestra en el sitio. Es distinto del correo que recibe los avisos de solicitudes.</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="pe_direccion">Dirección (pública)</label></th>
+					<td>
+						<textarea class="large-text" rows="2" id="pe_direccion" name="pe_ajustes[direccion]"><?php echo esc_textarea( pe_ajuste( 'direccion' ) ); ?></textarea>
+						<p class="description">Se muestra en la página de Contacto.</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="pe_facebook">Facebook (dirección de la página)</label></th>
+					<td>
+						<input type="url" class="regular-text" id="pe_facebook" name="pe_ajustes[facebook]" value="<?php echo esc_attr( pe_ajuste( 'facebook' ) ); ?>" placeholder="https://www.facebook.com/...">
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="pe_instagram">Instagram (dirección del perfil)</label></th>
+					<td>
+						<input type="url" class="regular-text" id="pe_instagram" name="pe_ajustes[instagram]" value="<?php echo esc_attr( pe_ajuste( 'instagram' ) ); ?>" placeholder="https://www.instagram.com/...">
 					</td>
 				</tr>
 				<tr>

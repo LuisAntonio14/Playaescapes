@@ -149,25 +149,28 @@ function pe_contacto_shortcode() {
 			<input type="text" name="pe_sitio_web" tabindex="-1" autocomplete="off">
 		</div>
 
-		<p>
-			<label for="pe_c_nombre">Nombre</label>
-			<input type="text" name="nombre" id="pe_c_nombre" value="<?php echo esc_attr( $previo( 'nombre' ) ); ?>" required>
-		</p>
-		<p>
-			<label for="pe_c_correo">Correo electrónico</label>
-			<input type="email" name="correo" id="pe_c_correo" value="<?php echo esc_attr( $previo( 'correo' ) ); ?>" required>
-		</p>
-		<p>
-			<label for="pe_c_telefono">Teléfono (opcional)</label>
-			<input type="tel" name="telefono" id="pe_c_telefono" value="<?php echo esc_attr( $previo( 'telefono' ) ); ?>">
-		</p>
-		<p>
-			<label for="pe_c_mensaje">Mensaje</label>
-			<textarea name="mensaje" id="pe_c_mensaje" rows="5" maxlength="2000" required><?php echo esc_textarea( $previo( 'mensaje' ) ); ?></textarea>
-		</p>
+		<div class="pe-contacto__campos">
+			<p class="pe-campo">
+				<label class="screen-reader-text" for="pe_c_nombre">Nombre completo</label>
+				<input type="text" name="nombre" id="pe_c_nombre" placeholder="Tu nombre completo" autocomplete="name" value="<?php echo esc_attr( $previo( 'nombre' ) ); ?>" required>
+			</p>
+			<p class="pe-campo">
+				<label class="screen-reader-text" for="pe_c_correo">Correo electrónico</label>
+				<input type="email" name="correo" id="pe_c_correo" placeholder="Tu correo electrónico" autocomplete="email" value="<?php echo esc_attr( $previo( 'correo' ) ); ?>" required>
+			</p>
+			<?php // Teléfono opcional: no está en el diseño. POR CONFIRMAR si se conserva. ?>
+			<p class="pe-campo">
+				<label class="screen-reader-text" for="pe_c_telefono">Teléfono (opcional)</label>
+				<input type="tel" name="telefono" id="pe_c_telefono" placeholder="Tu teléfono (opcional)" autocomplete="tel" value="<?php echo esc_attr( $previo( 'telefono' ) ); ?>">
+			</p>
+			<p class="pe-campo">
+				<label class="screen-reader-text" for="pe_c_mensaje">Mensaje</label>
+				<textarea name="mensaje" id="pe_c_mensaje" rows="8" maxlength="2000" placeholder="Mensaje" required><?php echo esc_textarea( $previo( 'mensaje' ) ); ?></textarea>
+			</p>
+		</div>
 		<?php echo pe_leyenda_privacidad(); ?>
 		<p>
-			<button type="submit">Enviar consulta</button>
+			<button type="submit" class="pe-boton">Enviar mensaje</button>
 		</p>
 	</form>
 	<?php
