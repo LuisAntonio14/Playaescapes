@@ -118,6 +118,7 @@ function pe_ajustes_limpiar( $entrada ) {
 		'direccion'        => isset( $entrada['direccion'] ) ? sanitize_textarea_field( $entrada['direccion'] ) : '',
 		'facebook'         => isset( $entrada['facebook'] ) ? esc_url_raw( $entrada['facebook'] ) : '',
 		'instagram'        => isset( $entrada['instagram'] ) ? esc_url_raw( $entrada['instagram'] ) : '',
+		'pagina_reserva'   => isset( $entrada['pagina_reserva'] ) ? absint( $entrada['pagina_reserva'] ) : 0,
 	);
 }
 
@@ -205,6 +206,21 @@ function pe_ajustes_pagina() {
 					<th scope="row"><label for="pe_instagram">Instagram (dirección del perfil)</label></th>
 					<td>
 						<input type="url" class="regular-text" id="pe_instagram" name="pe_ajustes[instagram]" value="<?php echo esc_attr( pe_ajuste( 'instagram' ) ); ?>" placeholder="https://www.instagram.com/...">
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="pe_pagina_reserva">Página del formulario de reserva</label></th>
+					<td>
+						<?php
+						wp_dropdown_pages( array(
+							'name'              => 'pe_ajustes[pagina_reserva]',
+							'id'                => 'pe_pagina_reserva',
+							'selected'          => absint( pe_ajuste( 'pagina_reserva' ) ),
+							'show_option_none'  => '— Ninguna —',
+							'option_none_value' => '0',
+						) );
+						?>
+						<p class="description">A esta página llevan los botones "Reservar" del sitio. Debe tener el formulario [pe_formulario].</p>
 					</td>
 				</tr>
 				<tr>

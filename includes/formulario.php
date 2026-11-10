@@ -292,10 +292,11 @@ add_action( 'admin_post_nopriv_pe_enviar_lead', 'pe_procesar_formulario' ); // v
 add_action( 'admin_post_pe_enviar_lead', 'pe_procesar_formulario' );        // con sesión
 
 
-// Dirección de la página que tiene el formulario.
-// Cuando exista la página definitiva, se cambia solo aquí.
+// Dirección de la página que tiene el formulario (se elige en Ajustes > PlayaEscapes).
+// Si no hay página elegida, se usa /reservar/.
 function pe_url_formulario() {
-	return home_url( '/formulario-de-prueba/' );
+	$url = function_exists( 'pe_url_pagina_ajuste' ) ? pe_url_pagina_ajuste( 'pagina_reserva' ) : '';
+	return '' !== $url ? $url : home_url( '/reservar/' );
 }
 
 // Botón "Reservar": [pe_boton_reservar]
