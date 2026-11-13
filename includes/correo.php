@@ -85,3 +85,5 @@ function pe_enviar_aviso_consulta( $consulta_id ) {
 
 	return wp_mail( $destino, $asunto, $mensaje, $cabeceras );
 }
+
+
