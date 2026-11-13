@@ -29,25 +29,21 @@ function pe_leyenda_privacidad( $con_terminos = false ) {
 	$aviso    = pe_url_pagina_ajuste( 'aviso_privacidad' );
 	$terminos = $con_terminos ? pe_url_pagina_ajuste( 'terminos' ) : '';
 
-	$partes = array();
-	if ( '' !== $aviso ) {
-		$partes[] = sprintf(
-			'que sean tratados conforme a nuestro <a href="%s" target="_blank" rel="noopener">Aviso de privacidad</a>',
-			esc_url( $aviso )
-		);
-	}
-	if ( '' !== $terminos ) {
-		$partes[] = sprintf(
-			'los <a href="%s" target="_blank" rel="noopener">Términos y condiciones</a> de la promoción',
-			esc_url( $terminos )
-		);
-	}
+	$enlace_aviso    = '' !== $aviso ? sprintf( '<a href="%s" target="_blank" rel="noopener">%s</a>', esc_url( $aviso ), esc_html( pe_t( 'Aviso de privacidad' ) ) ) : '';
+	$enlace_terminos = '' !== $terminos ? sprintf( '<a href="%s" target="_blank" rel="noopener">%s</a>', esc_url( $terminos ), esc_html( pe_t( 'Términos y condiciones' ) ) ) : '';
 
-	if ( ! $partes ) {
+	// Oraciones completas para que cada idioma pueda acomodar las palabras.
+	if ( $enlace_aviso && $enlace_terminos ) {
+		$texto = sprintf( esc_html( pe_t( 'Al enviar tus datos aceptas que sean tratados conforme a nuestro %1$s, así como los %2$s de la promoción.' ) ), $enlace_aviso, $enlace_terminos );
+	} elseif ( $enlace_aviso ) {
+		$texto = sprintf( esc_html( pe_t( 'Al enviar tus datos aceptas que sean tratados conforme a nuestro %s.' ) ), $enlace_aviso );
+	} elseif ( $enlace_terminos ) {
+		$texto = sprintf( esc_html( pe_t( 'Al enviar tus datos aceptas los %s de la promoción.' ) ), $enlace_terminos );
+	} else {
 		return '';
 	}
 
-	return '<p class="pe-leyenda-privacidad">Al enviar tus datos aceptas ' . implode( ', así como ', $partes ) . '.</p>';
+	return '<p class="pe-leyenda-privacidad">' . $texto . '</p>';
 }
 
 // Teléfono de contacto tal como se muestra en el sitio (Ajustes > PlayaEscapes).
