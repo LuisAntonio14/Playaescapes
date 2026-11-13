@@ -114,7 +114,7 @@ function pe_contacto_shortcode() {
 	ob_start();
 
 	if ( isset( $_GET['pe_contacto_ok'] ) ) {
-		echo '<div class="pe-mensaje-exito"><p>Gracias, recibimos tu consulta. Te responderemos a la brevedad.</p></div>';
+		echo '<div class="pe-mensaje-exito"><p>' . esc_html( pe_t( 'Gracias, recibimos tu consulta. Te responderemos a la brevedad.' ) ) . '</p></div>';
 	}
 
 	if ( isset( $_GET['pe_contacto_error'] ) ) {
@@ -128,10 +128,10 @@ function pe_contacto_shortcode() {
 		);
 
 		$codigos = explode( ',', sanitize_text_field( wp_unslash( $_GET['pe_contacto_error'] ) ) );
-		echo '<div class="pe-mensaje-error"><p>Revisa los datos e inténtalo de nuevo:</p><ul>';
+		echo '<div class="pe-mensaje-error"><p>' . esc_html( pe_t( 'Revisa los datos e inténtalo de nuevo:' ) ) . '</p><ul>';
 		foreach ( $codigos as $codigo ) {
 			if ( isset( $mensajes[ $codigo ] ) ) {
-				echo '<li>' . esc_html( $mensajes[ $codigo ] ) . '</li>';
+				echo '<li>' . esc_html( pe_t( $mensajes[ $codigo ] ) ) . '</li>';
 			}
 		}
 		echo '</ul></div>';
@@ -151,26 +151,26 @@ function pe_contacto_shortcode() {
 
 		<div class="pe-contacto__campos">
 			<p class="pe-campo">
-				<label class="screen-reader-text" for="pe_c_nombre">Nombre completo</label>
-				<input type="text" name="nombre" id="pe_c_nombre" placeholder="Tu nombre completo" autocomplete="name" value="<?php echo esc_attr( $previo( 'nombre' ) ); ?>" required>
+				<label class="screen-reader-text" for="pe_c_nombre"><?php echo esc_html( pe_t( 'Nombre completo' ) ); ?></label>
+				<input type="text" name="nombre" id="pe_c_nombre" placeholder="<?php echo esc_attr( pe_t( 'Tu nombre completo' ) ); ?>" autocomplete="name" value="<?php echo esc_attr( $previo( 'nombre' ) ); ?>" required>
 			</p>
 			<p class="pe-campo">
-				<label class="screen-reader-text" for="pe_c_correo">Correo electrónico</label>
-				<input type="email" name="correo" id="pe_c_correo" placeholder="Tu correo electrónico" autocomplete="email" value="<?php echo esc_attr( $previo( 'correo' ) ); ?>" required>
+				<label class="screen-reader-text" for="pe_c_correo"><?php echo esc_html( pe_t( 'Correo electrónico' ) ); ?></label>
+				<input type="email" name="correo" id="pe_c_correo" placeholder="<?php echo esc_attr( pe_t( 'Tu correo electrónico' ) ); ?>" autocomplete="email" value="<?php echo esc_attr( $previo( 'correo' ) ); ?>" required>
 			</p>
 			<?php // Teléfono opcional: no está en el diseño. POR CONFIRMAR si se conserva. ?>
 			<p class="pe-campo">
-				<label class="screen-reader-text" for="pe_c_telefono">Teléfono (opcional)</label>
-				<input type="tel" name="telefono" id="pe_c_telefono" placeholder="Tu teléfono (opcional)" autocomplete="tel" value="<?php echo esc_attr( $previo( 'telefono' ) ); ?>">
+				<label class="screen-reader-text" for="pe_c_telefono"><?php echo esc_html( pe_t( 'Teléfono (opcional)' ) ); ?></label>
+				<input type="tel" name="telefono" id="pe_c_telefono" placeholder="<?php echo esc_attr( pe_t( 'Tu teléfono (opcional)' ) ); ?>" autocomplete="tel" value="<?php echo esc_attr( $previo( 'telefono' ) ); ?>">
 			</p>
 			<p class="pe-campo">
-				<label class="screen-reader-text" for="pe_c_mensaje">Mensaje</label>
-				<textarea name="mensaje" id="pe_c_mensaje" rows="8" maxlength="2000" placeholder="Mensaje" required><?php echo esc_textarea( $previo( 'mensaje' ) ); ?></textarea>
+				<label class="screen-reader-text" for="pe_c_mensaje"><?php echo esc_html( pe_t( 'Mensaje' ) ); ?></label>
+				<textarea name="mensaje" id="pe_c_mensaje" rows="8" maxlength="2000" placeholder="<?php echo esc_attr( pe_t( 'Mensaje' ) ); ?>" required><?php echo esc_textarea( $previo( 'mensaje' ) ); ?></textarea>
 			</p>
 		</div>
 		<?php echo pe_leyenda_privacidad(); ?>
 		<p>
-			<button type="submit" class="pe-boton">Enviar mensaje</button>
+			<button type="submit" class="pe-boton"><?php echo esc_html( pe_t( 'Enviar mensaje' ) ); ?></button>
 		</p>
 	</form>
 	<?php

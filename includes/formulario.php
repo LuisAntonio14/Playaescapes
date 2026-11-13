@@ -71,12 +71,12 @@ function pe_formulario_shortcode( $atts ) {
 		$lista   = array();
 		foreach ( $codigos as $codigo ) {
 			if ( isset( $mensajes[ $codigo ] ) ) {
-				$lista[] = $mensajes[ $codigo ];
+				$lista[] = pe_t( $mensajes[ $codigo ] );
 			}
 		}
 
 		echo '<div class="pe-mensaje-error">';
-		echo '<p>Revisa los datos e inténtalo de nuevo:</p>';
+		echo '<p>' . esc_html( pe_t( 'Revisa los datos e inténtalo de nuevo:' ) ) . '</p>';
 		if ( $lista ) {
 			echo '<ul>';
 			foreach ( $lista as $mensaje ) {
@@ -101,66 +101,66 @@ function pe_formulario_shortcode( $atts ) {
 		</div>
 
 		<p>
-			<label for="pe_f_hotel">Hotel</label>
+			<label for="pe_f_hotel"><?php echo esc_html( pe_t( 'Hotel' ) ); ?></label>
 			<select name="hotel" id="pe_f_hotel" required>
-				<option value="">Selecciona un hotel</option>
+				<option value=""><?php echo esc_html( pe_t( 'Selecciona un hotel' ) ); ?></option>
 				<?php foreach ( $hoteles as $hotel ) : ?>
 					<option value="<?php echo esc_attr( $hotel ); ?>" <?php selected( $atts['hotel'], $hotel ); ?>><?php echo esc_html( $hotel ); ?></option>
 				<?php endforeach; ?>
 			</select>
 		</p>
 				<p>
-			<label for="pe_f_llegada">Fecha de llegada</label>
+			<label for="pe_f_llegada"><?php echo esc_html( pe_t( 'Fecha de llegada' ) ); ?></label>
 			<input type="date" name="llegada" id="pe_f_llegada" value="<?php echo esc_attr( $valor( 'llegada' ) ); ?>" required>
 		</p>
 		<p>
-			<label for="pe_f_salida">Fecha de salida</label>
+			<label for="pe_f_salida"><?php echo esc_html( pe_t( 'Fecha de salida' ) ); ?></label>
 			<input type="date" name="salida" id="pe_f_salida" value="<?php echo esc_attr( $valor( 'salida' ) ); ?>" required>
 		</p>
 		<p>
-			<label for="pe_f_adultos">Adultos</label>
+			<label for="pe_f_adultos"><?php echo esc_html( pe_t( 'Adultos' ) ); ?></label>
 			<input type="number" name="adultos" id="pe_f_adultos" min="1" max="20" value="<?php echo esc_attr( $valor( 'adultos', '2' ) ); ?>" required>
 		</p>
 		<p>
-			<label for="pe_f_ninos">Niños</label>
+			<label for="pe_f_ninos"><?php echo esc_html( pe_t( 'Niños' ) ); ?></label>
 			<input type="number" name="ninos" id="pe_f_ninos" min="0" max="10" value="<?php echo esc_attr( $valor( 'ninos', '0' ) ); ?>">
 		</p>
 		<p>
-			<label for="pe_f_habitaciones">Habitaciones</label>
+			<label for="pe_f_habitaciones"><?php echo esc_html( pe_t( 'Habitaciones' ) ); ?></label>
 			<input type="number" name="habitaciones" id="pe_f_habitaciones" min="1" max="10" value="<?php echo esc_attr( $valor( 'habitaciones', '1' ) ); ?>" required>
 		</p>
 		<p>
-			<label for="pe_f_nombre">Nombre</label>
+			<label for="pe_f_nombre"><?php echo esc_html( pe_t( 'Nombre' ) ); ?></label>
 			<input type="text" name="nombre" id="pe_f_nombre" value="<?php echo esc_attr( $valor( 'nombre' ) ); ?>" required>
 		</p>
 		<p>
-			<label for="pe_f_apellido">Apellido</label>
+			<label for="pe_f_apellido"><?php echo esc_html( pe_t( 'Apellido' ) ); ?></label>
 			<input type="text" name="apellido" id="pe_f_apellido" value="<?php echo esc_attr( $valor( 'apellido' ) ); ?>" required>
 		</p>
 		<p>
-			<label for="pe_f_correo">Correo electrónico</label>
+			<label for="pe_f_correo"><?php echo esc_html( pe_t( 'Correo electrónico' ) ); ?></label>
 			<input type="email" name="correo" id="pe_f_correo" value="<?php echo esc_attr( $valor( 'correo' ) ); ?>" required>
 		</p>
 		<p>
-			<label for="pe_f_correo2">Confirma tu correo</label>
+			<label for="pe_f_correo2"><?php echo esc_html( pe_t( 'Confirma tu correo' ) ); ?></label>
 			<input type="email" name="correo2" id="pe_f_correo2" value="<?php echo esc_attr( $valor( 'correo2' ) ); ?>" required>
 		</p>
 		<p>
-			<label for="pe_f_telefono">Teléfono</label>
+			<label for="pe_f_telefono"><?php echo esc_html( pe_t( 'Teléfono' ) ); ?></label>
 			<input type="tel" name="telefono" id="pe_f_telefono" value="<?php echo esc_attr( $valor( 'telefono' ) ); ?>" required>
 		</p>
 		<p>
-			<label for="pe_f_pais">País de residencia</label>
+			<label for="pe_f_pais"><?php echo esc_html( pe_t( 'País de residencia' ) ); ?></label>
 			<select name="pais" id="pe_f_pais" required>
-				<option value="">Selecciona un país</option>
+				<option value=""><?php echo esc_html( pe_t( 'Selecciona un país' ) ); ?></option>
 				<?php foreach ( $paises as $pais ) : ?>
-					<option value="<?php echo esc_attr( $pais ); ?>" <?php selected( $valor( 'pais' ), $pais ); ?>><?php echo esc_html( $pais ); ?></option>
+					<option value="<?php echo esc_attr( $pais ); ?>" <?php selected( $valor( 'pais' ), $pais ); ?>><?php echo esc_html( pe_t( $pais ) ); ?></option>
 				<?php endforeach; ?>
 			</select>
 		</p>
 		<?php echo pe_leyenda_privacidad( true ); ?>
 		<p>
-			<button type="submit">Proceder a reservar</button>
+			<button type="submit"><?php echo esc_html( pe_t( 'Proceder a reservar' ) ); ?></button>
 		</p>
 	</form>
 	<?php
@@ -324,7 +324,7 @@ function pe_boton_reservar_shortcode( $atts ) {
 	return sprintf(
 		'<a class="pe-boton-reservar" href="%s">%s</a>',
 		esc_url( $url ),
-		esc_html( $atts['texto'] )
+		esc_html( pe_t( $atts['texto'] ) )
 	);
 }
 add_shortcode( 'pe_boton_reservar', 'pe_boton_reservar_shortcode' );
