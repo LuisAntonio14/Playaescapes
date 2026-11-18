@@ -26,3 +26,4 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/contacto.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utm.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/whatsapp.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/reserva-ventana.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/traducciones-iniciales.php';

@@ -15,24 +15,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 function pe_traducciones_iniciales_en() {
 	return array(
-		'Solicita tu reservación' => 'Request your booking',
-		'Llegada' => 'Check-in',
-		'Salida' => 'Check-out',
-		'Huéspedes' => 'Guests',
-		'Mayor de 12 años' => 'Ages 12 and up',
-		'De 0 a 12 años' => 'Ages 0 to 12',
-		'Adulto' => 'Adult',
-		'Niño' => 'Child',
-		'Hab.' => 'Rm.',
-		'Restar' => 'Decrease',
-		'Sumar' => 'Increase',
-		'Confirmar' => 'Confirm',
-		'Continuar' => 'Continue',
-		'Cerrar' => 'Close',
-		'Sin costo adicional' => 'No additional cost',
-		'Respuesta en 24 hrs' => 'Reply within 24 hrs',
-		'Especialistas Sandos' => 'Sandos specialists',
-		'Campos obligatorios' => 'Required fields',
+		'Atención personalizada en menos de 24 horas' => 'Personalized assistance in less than 24 hours',
+		'Tu vacación perfecta en *Sandos Hotels*' => 'Your perfect vacation at *Sandos Hotels*',
+		'Centro de promociones exclusivo de la cadena Sandos, en México' => 'Exclusive promotions center for Sandos Hotels in Mexico',
+		'Agencia certificada por' => 'Agency certified by',
+		'Respuesta en 24 horas' => 'Reply within 24 hours',
+		'Contacto directo, sin intermediarios' => 'Direct contact, no middlemen',
 	);
 }
 
