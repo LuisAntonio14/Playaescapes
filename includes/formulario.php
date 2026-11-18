@@ -106,6 +106,9 @@ function pe_formulario_shortcode( $atts ) {
 			<input type="text" name="pe_sitio_web" tabindex="-1" autocomplete="off">
 		</div>
 
+		<fieldset class="pe-seccion pe-seccion--reserva">
+			<legend class="pe-seccion__titulo"><?php echo esc_html( pe_t( 'Tus detalles de reserva' ) ); ?></legend>
+			<div class="pe-seccion__campos">
 		<p>
 			<label for="pe_f_hotel"><?php echo esc_html( pe_t( 'Hotel' ) ); ?></label>
 			<select name="hotel" id="pe_f_hotel" required>
@@ -135,6 +138,11 @@ function pe_formulario_shortcode( $atts ) {
 			<label for="pe_f_habitaciones"><?php echo esc_html( pe_t( 'Habitaciones' ) ); ?></label>
 			<input type="number" name="habitaciones" id="pe_f_habitaciones" min="1" max="10" value="<?php echo esc_attr( $valor( 'habitaciones', '1' ) ); ?>" required>
 		</p>
+			</div>
+		</fieldset>
+		<fieldset class="pe-seccion pe-seccion--contacto">
+			<legend class="pe-seccion__titulo"><?php echo esc_html( pe_t( 'Tus detalles de contacto' ) ); ?></legend>
+			<div class="pe-seccion__campos">
 		<p>
 			<label for="pe_f_nombre"><?php echo esc_html( pe_t( 'Nombre' ) ); ?></label>
 			<input type="text" name="nombre" id="pe_f_nombre" value="<?php echo esc_attr( $valor( 'nombre' ) ); ?>" required>
@@ -164,6 +172,8 @@ function pe_formulario_shortcode( $atts ) {
 				<?php endforeach; ?>
 			</select>
 		</p>
+			</div>
+		</fieldset>
 		<p class="pe-nota-obligatorios">* <?php echo esc_html( pe_t( 'Campos obligatorios' ) ); ?></p>
 		<?php echo pe_leyenda_privacidad( true ); ?>
 		<p>

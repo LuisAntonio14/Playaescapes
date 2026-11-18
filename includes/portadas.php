@@ -32,9 +32,11 @@ function pe_mostrar_metabox_portada( $post ) {
 	wp_nonce_field( 'pe_guardar_portada', 'pe_portada_nonce' );
 
 	$campos = array(
-		'etiqueta'  => 'Texto pequeño (arriba del título)',
-		'titulo'    => 'Título',
-		'subtitulo' => 'Subtítulo',
+		'etiqueta'     => 'Texto pequeño (arriba del título)',
+		'titulo'       => 'Título (en Inicio, el texto entre *asteriscos* sale en cursiva)',
+		'subtitulo'    => 'Subtítulo',
+		'boton_texto'  => 'Texto del botón (solo Inicio)',
+		'boton_enlace' => 'Enlace del botón (solo Inicio; si queda vacío, abre la ventana de reserva)',
 	);
 
 	echo '<p>Si un campo se deja vacío, la página usa el texto del diseño.</p>';
@@ -63,7 +65,7 @@ function pe_guardar_metabox_portada( $post_id ) {
 		return;
 	}
 
-	foreach ( array( 'etiqueta', 'titulo', 'subtitulo' ) as $clave ) {
+	foreach ( array( 'etiqueta', 'titulo', 'subtitulo', 'boton_texto', 'boton_enlace' ) as $clave ) {
 		if ( isset( $_POST[ 'pe_portada_' . $clave ] ) ) {
 			update_post_meta(
 				$post_id,

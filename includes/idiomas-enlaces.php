@@ -115,3 +115,14 @@ function pe_gracias_segun_idioma( $destino ) {
 	return get_permalink( $traducida ) . $parametros;
 }
 add_filter( 'wp_redirect', 'pe_gracias_segun_idioma' );
+
+/**
+ * 3. Polylang no copia entre idiomas los textos que deben ser distintos en cada idioma
+ *    (textos de portada y "Qué incluye" de los hoteles).
+ */
+function pe_no_sincronizar_textos( $metas ) {
+	return array_values( array_filter( (array) $metas, function ( $meta ) {
+		return 0 !== strpos( $meta, '_pe_portada_' ) && '_pe_hotel_incluye' !== $meta;
+	} ) );
+}
+add_filter( 'pll_copy_post_metas', 'pe_no_sincronizar_textos' );
