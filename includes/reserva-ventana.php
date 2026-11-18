@@ -77,8 +77,7 @@ function pe_ventana_reserva() {
 	$resumen = sprintf( '2 %s, 0 %s, 1 %s', pe_t( 'Adultos' ), pe_t( 'Niños' ), pe_t( 'Hab.' ) );
 	?>
 	<div id="pe-reserva-ventana" class="pe-ventana" hidden>
-		<div class="pe-ventana__caja" role="dialog" aria-modal="true" aria-labelledby="pe-ventana-titulo">
-			<button type="button" class="pe-ventana__cerrar" data-pe-cerrar aria-label="<?php echo esc_attr( pe_t( 'Cerrar' ) ); ?>">&times;</button>
+		<div class="pe-ventana__caja" role="dialog" aria-modal="true" aria-labelledby="pe-ventana-titulo" tabindex="-1">			<button type="button" class="pe-ventana__cerrar" data-pe-cerrar aria-label="<?php echo esc_attr( pe_t( 'Cerrar' ) ); ?>">&times;</button>
 			<p class="pe-ventana__etiqueta">Sandos Hotels &amp; Resorts</p>
 			<h2 id="pe-ventana-titulo" class="pe-ventana__titulo"><?php echo esc_html( pe_t( 'Solicita tu reservación' ) ); ?></h2>
 
@@ -228,7 +227,7 @@ function pe_ventana_reserva() {
 			ultimoFoco = document.activeElement;
 			ventana.hidden = false;
 			document.documentElement.classList.add('pe-ventana-abierta');
-			(hotel.value ? llegada : hotel).focus();
+			ventana.querySelector('.pe-ventana__caja').focus();
 		}
 		function cerrar() {
 			verHuespedes(false);
