@@ -125,7 +125,9 @@ function pe_ajustes_limpiar( $entrada ) {
 		'direccion'        => isset( $entrada['direccion'] ) ? sanitize_textarea_field( $entrada['direccion'] ) : '',
 		'facebook'         => isset( $entrada['facebook'] ) ? esc_url_raw( $entrada['facebook'] ) : '',
 		'instagram'        => isset( $entrada['instagram'] ) ? esc_url_raw( $entrada['instagram'] ) : '',
-		'pagina_reserva'   => isset( $entrada['pagina_reserva'] ) ? absint( $entrada['pagina_reserva'] ) : 0,
+		'pagina_reserva'   => isset( $entrada['pagina_reserva'] ) ? absint( $entrada['pagina_reserva'] ) : 0,		'pagina_reserva'   => isset( $entrada['pagina_reserva'] ) ? absint( $entrada['pagina_reserva'] ) : 0,
+		'certificado_texto' => isset( $entrada['certificado_texto'] ) ? sanitize_text_field( $entrada['certificado_texto'] ) : '',
+		'certificado_url'   => isset( $entrada['certificado_url'] ) ? esc_url_raw( $entrada['certificado_url'] ) : '',
 	);
 }
 
@@ -243,6 +245,20 @@ function pe_ajustes_pagina() {
 						) );
 						?>
 						<p class="description">Se enlaza debajo del formulario de reserva.</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="pe_certificado_texto">Texto de "Agencia certificada"</label></th>
+					<td>
+						<input type="text" class="regular-text" id="pe_certificado_texto" name="pe_ajustes[certificado_texto]" value="<?php echo esc_attr( pe_ajuste( 'certificado_texto' ) ); ?>" placeholder="Agencia certificada por">
+						<p class="description">Se muestra en la portada del Inicio, junto al logo de Sandos. Si queda vacío, se usa "Agencia certificada por".</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="pe_certificado_url">Enlace de "Agencia certificada"</label></th>
+					<td>
+						<input type="url" class="regular-text" id="pe_certificado_url" name="pe_ajustes[certificado_url]" value="<?php echo esc_attr( pe_ajuste( 'certificado_url' ) ); ?>" placeholder="https://www.sandos.com/...">
+						<p class="description">Página de sandos.com con el certificado. Se abre en una ventana nueva. Si queda vacío, el sello se muestra sin enlace.</p>
 					</td>
 				</tr>
 			</table>

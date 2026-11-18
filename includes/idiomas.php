@@ -98,6 +98,8 @@ function pe_textos_traducibles() {
 			'Otro',
 			'Proceder a reservar',
 			'Campos obligatorios',
+			'Tus detalles de reserva',
+			'Tus detalles de contacto',
 			'Revisa los datos e inténtalo de nuevo:',
 			'La página estuvo abierta mucho tiempo. Recárgala e inténtalo de nuevo.',
 			'Selecciona un hotel.',
@@ -107,6 +109,14 @@ function pe_textos_traducibles() {
 			'Escribe tu apellido.',
 			'Los correos no coinciden.',
 			'El teléfono debe tener de 10 a 15 dígitos.',
+		),
+		'Inicio' => array(
+			'Atención personalizada en menos de 24 horas',
+			'Tu vacación perfecta en *Sandos Hotels*',
+			'Centro de promociones exclusivo de la cadena Sandos, en México',
+			'Agencia certificada por',
+			'Respuesta en 24 horas',
+			'Contacto directo, sin intermediarios',
 		),
 		'Avisos legales' => array(
 			'Al enviar tus datos aceptas que sean tratados conforme a nuestro %1$s, así como los %2$s de la promoción.',
@@ -147,6 +157,9 @@ function pe_registrar_textos() {
 				pll_register_string( 'Ajustes: teléfonos por país', $pais['pais'], 'PlayaEscapes' );
 			}
 		}
+	}
+	if ( function_exists( 'pe_ajuste' ) && '' !== pe_ajuste( 'certificado_texto' ) ) {
+		pll_register_string( 'Ajustes: agencia certificada', pe_ajuste( 'certificado_texto' ), 'PlayaEscapes' );
 	}
 	if ( function_exists( 'pe_ajuste' ) && '' !== pe_ajuste( 'whatsapp_mensaje' ) ) {
 		pll_register_string( 'Ajustes: mensaje de WhatsApp', pe_ajuste( 'whatsapp_mensaje' ), 'PlayaEscapes' );
