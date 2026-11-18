@@ -10,8 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Correo al que llegan los avisos: se configura en Ajustes > PlayaEscapes.
 // Si está vacío o no es válido, no se envía aviso (el lead queda guardado igual).
 function pe_correo_destino() {
-	$correo = pe_ajuste( 'correo_avisos' );
-	return is_email( $correo ) ? $correo : '';
+	return pe_lista_correos( pe_ajuste( 'correo_avisos' ) );
 }
 
 // Envía el aviso de un lead ya guardado. Si falla, el lead sigue guardado.
@@ -61,7 +60,7 @@ function pe_enviar_aviso_lead( $lead_id ) {
 // Envía el aviso de una consulta de Contacto ya guardada. Si falla, la consulta sigue guardada.
 function pe_enviar_aviso_consulta( $consulta_id ) {
 	$destino = pe_correo_destino();
-	if ( '' === $destino ) {
+	if ( empty( $destino ) ) {
 		return false;
 	}
 

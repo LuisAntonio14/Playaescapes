@@ -99,12 +99,23 @@ function pe_ajustes_registrar() {
 }
 add_action( 'admin_init', 'pe_ajustes_registrar' );
 
+// Convierte un texto con correos separados por coma en una lista de correos válidos, sin repetidos.
+function pe_lista_correos( $texto ) {
+	$correos = array();
+	foreach ( preg_split( '/[,;\s]+/', (string) $texto ) as $correo ) {
+		$correo = sanitize_email( $correo );
+		if ( is_email( $correo ) && ! in_array( $correo, $correos, true ) ) {
+			$correos[] = $correo;
+		}
+	}
+	return $correos;
+}
+
 // Limpia lo que se escribe antes de guardarlo.
 function pe_ajustes_limpiar( $entrada ) {
 	$entrada = is_array( $entrada ) ? $entrada : array();
 	return array(
-		'correo_avisos'    => isset( $entrada['correo_avisos'] ) ? sanitize_email( $entrada['correo_avisos'] ) : '',
-		'whatsapp_numero'  => isset( $entrada['whatsapp_numero'] ) ? preg_replace( '/\D/', '', $entrada['whatsapp_numero'] ) : '',
+		'correo_avisos'    => isset( $entrada['correo_avisos'] ) ? implode( ', ', pe_lista_correos( $entrada['correo_avisos'] ) ) : '',		'whatsapp_numero'  => isset( $entrada['whatsapp_numero'] ) ? preg_replace( '/\D/', '', $entrada['whatsapp_numero'] ) : '',
 		'whatsapp_mensaje' => isset( $entrada['whatsapp_mensaje'] ) ? sanitize_text_field( $entrada['whatsapp_mensaje'] ) : '',
 		'aviso_privacidad' => isset( $entrada['aviso_privacidad'] ) ? absint( $entrada['aviso_privacidad'] ) : 0,
 		'terminos'         => isset( $entrada['terminos'] ) ? absint( $entrada['terminos'] ) : 0,
@@ -131,8 +142,8 @@ function pe_ajustes_pagina() {
 				<tr>
 					<th scope="row"><label for="pe_correo_avisos">Correo para avisos de solicitudes</label></th>
 					<td>
-						<input type="email" class="regular-text" id="pe_correo_avisos" name="pe_ajustes[correo_avisos]" value="<?php echo esc_attr( pe_ajuste( 'correo_avisos' ) ); ?>">
-						<p class="description">Aquí llega el aviso de cada solicitud nueva.</p>
+						<input type="email" multiple class="large-text" id="pe_correo_avisos" name="pe_ajustes[correo_avisos]" value="<?php echo esc_attr( pe_ajuste( 'correo_avisos' ) ); ?>">
+						<p class="description">Aquí llega el aviso de cada solicitud y consulta nueva. Para varios destinatarios, sepáralos con coma. Ejemplo de formato: correo1@dominio.com, correo2@dominio.com</p>
 					</td>
 				</tr>
 				<tr>

@@ -151,4 +151,4 @@ function pe_registrar_textos() {
 		pll_register_string( 'Ajustes: mensaje de WhatsApp', pe_ajuste( 'whatsapp_mensaje' ), 'PlayaEscapes' );
 	}
 }
-add_action( 'init', 'pe_registrar_textos' );
+add_action( 'init', 'pe_registrar_textos' );   
