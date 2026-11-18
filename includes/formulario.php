@@ -39,6 +39,12 @@ function pe_formulario_shortcode( $atts ) {
 			$previos = $guardados;
 		}
 	}
+	// Datos que llegan de la ventana "Solicita tu reservación" (paso 1).
+	foreach ( array( 'llegada', 'salida', 'adultos', 'ninos', 'habitaciones' ) as $campo ) {
+		if ( ! isset( $previos[ $campo ] ) && isset( $_GET[ $campo ] ) ) {
+			$previos[ $campo ] = sanitize_text_field( wp_unslash( $_GET[ $campo ] ) );
+		}
+	}
 	if ( isset( $previos['hotel'] ) && in_array( $previos['hotel'], $hoteles, true ) ) {
 		$atts['hotel'] = $previos['hotel'];
 	}
@@ -158,6 +164,7 @@ function pe_formulario_shortcode( $atts ) {
 				<?php endforeach; ?>
 			</select>
 		</p>
+		<p class="pe-nota-obligatorios">* <?php echo esc_html( pe_t( 'Campos obligatorios' ) ); ?></p>
 		<?php echo pe_leyenda_privacidad( true ); ?>
 		<p>
 			<button type="submit"><?php echo esc_html( pe_t( 'Proceder a reservar' ) ); ?></button>

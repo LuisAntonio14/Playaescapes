@@ -97,6 +97,7 @@ function pe_textos_traducibles() {
 			'USA',
 			'Otro',
 			'Proceder a reservar',
+			'Campos obligatorios',
 			'Revisa los datos e inténtalo de nuevo:',
 			'La página estuvo abierta mucho tiempo. Recárgala e inténtalo de nuevo.',
 			'Selecciona un hotel.',
