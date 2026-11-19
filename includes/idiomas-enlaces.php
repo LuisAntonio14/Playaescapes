@@ -122,7 +122,8 @@ add_filter( 'wp_redirect', 'pe_gracias_segun_idioma' );
  */
 function pe_no_sincronizar_textos( $metas ) {
 	return array_values( array_filter( (array) $metas, function ( $meta ) {
-		return 0 !== strpos( $meta, '_pe_portada_' ) && '_pe_hotel_incluye' !== $meta;
+		return 0 !== strpos( $meta, '_pe_portada_' )
+			&& ! in_array( $meta, array( '_pe_hotel_incluye', '_pe_hotel_ubicacion', '_pe_hotel_tipo' ), true );
 	} ) );
 }
 add_filter( 'pll_copy_post_metas', 'pe_no_sincronizar_textos' );

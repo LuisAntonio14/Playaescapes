@@ -117,6 +117,13 @@ function pe_textos_traducibles() {
 			'Agencia certificada por',
 			'Respuesta en 24 horas',
 			'Contacto directo, sin intermediarios',
+			'Sobre nosotros',
+			'En Playa Escapes somos la única agencia especializada exclusivamente en **Sandos Hotels &** *Resorts en México.*',
+			'Conocemos cada propiedad, habitación y detalle que importa, para que elijas con total confianza.',
+			'Nuestros hoteles',
+			'*Cuatro resorts.* Un solo especialista.',
+			'Desde',
+			'Conocer más',
 		),
 		'Avisos legales' => array(
 			'Al enviar tus datos aceptas que sean tratados conforme a nuestro %1$s, así como los %2$s de la promoción.',

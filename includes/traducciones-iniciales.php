@@ -15,12 +15,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 function pe_traducciones_iniciales_en() {
 	return array(
-		'Atención personalizada en menos de 24 horas' => 'Personalized assistance in less than 24 hours',
-		'Tu vacación perfecta en *Sandos Hotels*' => 'Your perfect vacation at *Sandos Hotels*',
-		'Centro de promociones exclusivo de la cadena Sandos, en México' => 'Exclusive promotions center for Sandos Hotels in Mexico',
-		'Agencia certificada por' => 'Agency certified by',
-		'Respuesta en 24 horas' => 'Reply within 24 hours',
-		'Contacto directo, sin intermediarios' => 'Direct contact, no middlemen',
+		'Sobre nosotros' => 'About us',
+		'En Playa Escapes somos la única agencia especializada exclusivamente en **Sandos Hotels &** *Resorts en México.*' => 'At Playa Escapes, we are the only agency specializing exclusively in **Sandos Hotels &** *Resorts in Mexico.*',
+		'Conocemos cada propiedad, habitación y detalle que importa, para que elijas con total confianza.' => 'We know every property, room, and detail that matters, so you can choose with complete confidence.',
+		'Nuestros hoteles' => 'Our hotels',
+		'*Cuatro resorts.* Un solo especialista.' => '*Four resorts.* One specialist.',
+		'Desde' => 'From',
+		'Conocer más' => 'Learn more',
 	);
 }
 
