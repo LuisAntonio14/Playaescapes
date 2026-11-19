@@ -56,6 +56,23 @@ function pe_mostrar_metabox_hotel( $post ) {
 	}
 	echo '</select></p>';
 
+	$ubicacion = get_post_meta( $post->ID, '_pe_hotel_ubicacion', true );
+	$tipo      = get_post_meta( $post->ID, '_pe_hotel_tipo', true );
+
+	echo '<p><label for="pe_hotel_ubicacion"><strong>Ubicación (etiqueta de la tarjeta)</strong></label><br>';
+	printf(
+		'<input type="text" class="regular-text" name="pe_hotel_ubicacion" id="pe_hotel_ubicacion" value="%s" placeholder="Ejemplo: Playa del Carmen">',
+		esc_attr( $ubicacion )
+	);
+	echo '</p>';
+
+	echo '<p><label for="pe_hotel_tipo"><strong>Tipo (etiquetas, separadas por coma)</strong></label><br>';
+	printf(
+		'<input type="text" class="regular-text" name="pe_hotel_tipo" id="pe_hotel_tipo" value="%s" placeholder="Ejemplo: Familiar, Solo adultos">',
+		esc_attr( $tipo )
+	);
+	echo '</p>';
+
 	$precio  = get_post_meta( $post->ID, '_pe_hotel_precio_desde', true );
 	$incluye = get_post_meta( $post->ID, '_pe_hotel_incluye', true );
 
@@ -91,6 +108,12 @@ function pe_guardar_metabox_hotel( $post_id ) {
 		$hotel = sanitize_text_field( wp_unslash( $_POST['pe_hotel_lista'] ) );
 		if ( '' === $hotel || in_array( $hotel, pe_lista_hoteles(), true ) ) {
 			update_post_meta( $post_id, '_pe_hotel', $hotel );
+		}
+	}
+
+	foreach ( array( 'pe_hotel_ubicacion', 'pe_hotel_tipo' ) as $campo ) {
+		if ( isset( $_POST[ $campo ] ) ) {
+			update_post_meta( $post_id, '_' . $campo, sanitize_text_field( wp_unslash( $_POST[ $campo ] ) ) );
 		}
 	}
 
