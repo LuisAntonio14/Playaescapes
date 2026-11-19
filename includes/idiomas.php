@@ -124,6 +124,12 @@ function pe_textos_traducibles() {
 			'*Cuatro resorts.* Un solo especialista.',
 			'Desde',
 			'Conocer más',
+			'Oferta limitada',
+			'Precio especial',
+			'MXN por persona / noche',
+			'Ahorras %s MXN',
+			'Válido hasta',
+			'Me interesa la oferta',
 		),
 		'Avisos legales' => array(
 			'Al enviar tus datos aceptas que sean tratados conforme a nuestro %1$s, así como los %2$s de la promoción.',

@@ -56,6 +56,29 @@ function pe_mostrar_metabox_hot_escape( $post ) {
 	}
 	echo '</select></p>';
 
+	$etiqueta  = get_post_meta( $post->ID, '_pe_oferta_etiqueta', true );
+	$insignia  = get_post_meta( $post->ID, '_pe_oferta_insignia', true );
+	$subtitulo = get_post_meta( $post->ID, '_pe_oferta_subtitulo', true );
+	$anterior  = get_post_meta( $post->ID, '_pe_precio_anterior', true );
+
+	echo '<p><label for="pe_oferta_etiqueta"><strong>Texto pequeño (arriba del título)</strong></label><br>';
+	printf( '<input type="text" class="regular-text" name="pe_oferta_etiqueta" id="pe_oferta_etiqueta" value="%s" placeholder="Si queda vacío: Oferta limitada">', esc_attr( $etiqueta ) );
+	echo '</p>';
+
+	echo '<p><label for="pe_oferta_insignia"><strong>Insignia (ejemplo: 25% OFF — Hot Escape)</strong></label><br>';
+	printf( '<input type="text" class="regular-text" name="pe_oferta_insignia" id="pe_oferta_insignia" value="%s">', esc_attr( $insignia ) );
+	echo '</p>';
+
+	echo '<p><label for="pe_oferta_subtitulo"><strong>Subtítulo</strong></label><br>';
+	printf( '<input type="text" class="large-text" name="pe_oferta_subtitulo" id="pe_oferta_subtitulo" value="%s">', esc_attr( $subtitulo ) );
+	echo '</p>';
+
+	echo '<p><label for="pe_precio_anterior"><strong>Precio anterior, tachado (MXN por persona por noche, opcional)</strong></label><br>';
+	printf( '<input type="number" min="0" step="1" name="pe_precio_anterior" id="pe_precio_anterior" value="%s">', esc_attr( $anterior ) );
+	echo '</p>';
+
+	echo '<p class="description">En el Inicio, el título de la promoción admite *asteriscos* para la parte en cursiva, y "Precio desde" se muestra como precio especial.</p>';
+
 	$precio       = get_post_meta( $post->ID, '_pe_precio_desde', true );
 	$vigencia_ini = get_post_meta( $post->ID, '_pe_vigencia_inicio', true );
 	$vigencia_fin = get_post_meta( $post->ID, '_pe_vigencia_fin', true );
@@ -101,6 +124,17 @@ function pe_guardar_metabox_hot_escape( $post_id ) {
 		if ( '' === $hotel || in_array( $hotel, pe_lista_hoteles(), true ) ) {
 			update_post_meta( $post_id, '_pe_hotel', $hotel );
 		}
+	}
+
+	foreach ( array( 'pe_oferta_etiqueta', 'pe_oferta_insignia', 'pe_oferta_subtitulo' ) as $campo ) {
+		if ( isset( $_POST[ $campo ] ) ) {
+			update_post_meta( $post_id, '_' . $campo, sanitize_text_field( wp_unslash( $_POST[ $campo ] ) ) );
+		}
+	}
+
+	if ( isset( $_POST['pe_precio_anterior'] ) ) {
+		$anterior = '' === $_POST['pe_precio_anterior'] ? '' : absint( $_POST['pe_precio_anterior'] );
+		update_post_meta( $post_id, '_pe_precio_anterior', $anterior );
 	}
 
 	if ( isset( $_POST['pe_precio_desde'] ) ) {

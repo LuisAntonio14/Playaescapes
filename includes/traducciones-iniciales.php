@@ -15,13 +15,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 function pe_traducciones_iniciales_en() {
 	return array(
-		'Sobre nosotros' => 'About us',
-		'En Playa Escapes somos la única agencia especializada exclusivamente en **Sandos Hotels &** *Resorts en México.*' => 'At Playa Escapes, we are the only agency specializing exclusively in **Sandos Hotels &** *Resorts in Mexico.*',
-		'Conocemos cada propiedad, habitación y detalle que importa, para que elijas con total confianza.' => 'We know every property, room, and detail that matters, so you can choose with complete confidence.',
-		'Nuestros hoteles' => 'Our hotels',
-		'*Cuatro resorts.* Un solo especialista.' => '*Four resorts.* One specialist.',
-		'Desde' => 'From',
-		'Conocer más' => 'Learn more',
+		'Oferta limitada' => 'Limited offer',
+		'Precio especial' => 'Special price',
+		'MXN por persona / noche' => 'MXN per person / night',
+		'Ahorras %s MXN' => 'You save %s MXN',
+		'Válido hasta' => 'Valid until',
+		'Me interesa la oferta' => 'I\'m interested in this offer',
 	);
 }
 
