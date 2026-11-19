@@ -73,16 +73,17 @@ function pe_idioma_de_origen() {
 		return '';
 	}
 
-	$inicio = trailingslashit( home_url() );
+	// Compara solo la ruta (/en/...), porque la página de origen puede venir completa o relativa.
+	$ruta = trailingslashit( (string) wp_parse_url( $origen, PHP_URL_PATH ) );
+	$base = untrailingslashit( (string) wp_parse_url( home_url(), PHP_URL_PATH ) );
 	foreach ( pll_languages_list() as $slug ) {
 		if ( $slug === pll_default_language() ) {
 			continue;
 		}
-		if ( 0 === strpos( $origen, $inicio . $slug . '/' ) || untrailingslashit( $origen ) === $inicio . $slug ) {
+		if ( 0 === strpos( $ruta, $base . '/' . $slug . '/' ) ) {
 			return $slug;
 		}
 	}
-
 	return '';
 }
 
@@ -128,3 +129,74 @@ function pe_no_sincronizar_textos( $metas ) {
 	} ) );
 }
 add_filter( 'pll_copy_post_metas', 'pe_no_sincronizar_textos' );
+
+/**
+ * 4. Idioma en leads y consultas.
+ */
+function pe_nombre_idioma( $slug ) {
+	if ( '' === $slug ) {
+		return '—';
+	}
+	if ( function_exists( 'PLL' ) ) {
+		$idioma = PLL()->model->get_language( $slug );
+		if ( $idioma ) {
+			return $idioma->name;
+		}
+	}
+	return strtoupper( $slug );
+}
+
+// Idioma del lead o consulta que se está guardando en esta petición.
+$GLOBALS['pe_idioma_registro'] = '';
+
+function pe_guardar_idioma_registro( $post_id, $post, $actualizacion ) {
+	if ( $actualizacion || 'auto-draft' === $post->post_status ) {
+		return;
+	}
+	if ( ! in_array( $post->post_type, array( 'pe_lead', 'pe_consulta' ), true ) ) {
+		return;
+	}
+	if ( ! function_exists( 'pll_default_language' ) ) {
+		return;
+	}
+
+	$idioma = pe_idioma_de_origen();
+	if ( '' === $idioma ) {
+		$idioma = pll_default_language();
+	}
+
+	update_post_meta( $post_id, 'pe_idioma', $idioma );
+	$GLOBALS['pe_idioma_registro'] = $idioma;
+}
+add_action( 'wp_insert_post', 'pe_guardar_idioma_registro', 10, 3 );
+
+// Columna "Idioma" en las listas de Leads y Consultas.
+function pe_columna_idioma( $columnas ) {
+	$columnas['pe_idioma'] = 'Idioma';
+	return $columnas;
+}
+add_filter( 'manage_pe_lead_posts_columns', 'pe_columna_idioma', 20 );
+add_filter( 'manage_pe_consulta_posts_columns', 'pe_columna_idioma', 20 );
+
+function pe_columna_idioma_valor( $columna, $post_id ) {
+	if ( 'pe_idioma' === $columna ) {
+		echo esc_html( pe_nombre_idioma( (string) get_post_meta( $post_id, 'pe_idioma', true ) ) );
+	}
+}
+add_action( 'manage_pe_lead_posts_custom_column', 'pe_columna_idioma_valor', 10, 2 );
+add_action( 'manage_pe_consulta_posts_custom_column', 'pe_columna_idioma_valor', 10, 2 );
+
+// Línea "Idioma" al final del correo de aviso.
+function pe_idioma_en_correo( $datos ) {
+	$idioma = $GLOBALS['pe_idioma_registro'];
+	if ( '' === $idioma || empty( $datos['message'] ) ) {
+		return $datos;
+	}
+
+	$linea   = 'Idioma: ' . pe_nombre_idioma( $idioma );
+	$es_html = false !== strpos( $datos['message'], '</' );
+	$datos['message'] .= $es_html ? '<p>' . esc_html( $linea ) . '</p>' : "\n\n" . $linea;
+
+	return $datos;
+}
+add_filter( 'wp_mail', 'pe_idioma_en_correo' );
