@@ -148,8 +148,7 @@ add_action( 'manage_pe_lead_posts_custom_column', 'pe_contenido_columnas_leads',
 
 // Botón "Exportar a Excel (CSV)" arriba de la lista de Leads (solo administradores).
 function pe_boton_exportar_leads( $post_type ) {
-	if ( 'pe_lead' !== $post_type || ! current_user_can( 'manage_options' ) ) {
-		return;
+	if ( 'pe_lead' !== $post_type || ! current_user_can( 'pe_ver_leads' ) ) {		return;
 	}
 	$url = wp_nonce_url( admin_url( 'admin-post.php?action=pe_exportar_leads' ), 'pe_exportar_leads' );
 	printf( '<a href="%s" class="button">Exportar a Excel (CSV)</a>', esc_url( $url ) );
@@ -167,7 +166,7 @@ function pe_csv_celda( $valor ) {
 
 // Genera y descarga el archivo CSV con todos los leads.
 function pe_exportar_leads() {
-	if ( ! current_user_can( 'manage_options' ) ) {
+	if ( ! current_user_can( 'pe_ver_leads' ) ) {
 		wp_die( 'No tienes permiso para exportar.' );
 	}
 	check_admin_referer( 'pe_exportar_leads' );
