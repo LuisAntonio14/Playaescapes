@@ -128,7 +128,9 @@ function pe_ajustes_limpiar( $entrada ) {
 		'pagina_reserva'   => isset( $entrada['pagina_reserva'] ) ? absint( $entrada['pagina_reserva'] ) : 0,		'pagina_reserva'   => isset( $entrada['pagina_reserva'] ) ? absint( $entrada['pagina_reserva'] ) : 0,
 		'certificado_texto' => isset( $entrada['certificado_texto'] ) ? sanitize_text_field( $entrada['certificado_texto'] ) : '',
 		'certificado_url'   => isset( $entrada['certificado_url'] ) ? esc_url_raw( $entrada['certificado_url'] ) : '',
-	);
+		'certificado_titulo'  => isset( $entrada['certificado_titulo'] ) ? sanitize_text_field( $entrada['certificado_titulo'] ) : '',
+		'certificado_mensaje' => isset( $entrada['certificado_mensaje'] ) ? sanitize_textarea_field( $entrada['certificado_mensaje'] ) : '',
+		'certificado_boton'   => isset( $entrada['certificado_boton'] ) ? sanitize_text_field( $entrada['certificado_boton'] ) : '',	);
 }
 
 function pe_ajustes_pagina() {
@@ -258,7 +260,26 @@ function pe_ajustes_pagina() {
 					<th scope="row"><label for="pe_certificado_url">Enlace de "Agencia certificada"</label></th>
 					<td>
 						<input type="url" class="regular-text" id="pe_certificado_url" name="pe_ajustes[certificado_url]" value="<?php echo esc_attr( pe_ajuste( 'certificado_url' ) ); ?>" placeholder="https://www.sandos.com/...">
-						<p class="description">Página de sandos.com con el certificado. Se abre en una ventana nueva. Si queda vacío, el sello se muestra sin enlace.</p>
+						<p class="description">Página de sandos.com con el certificado. Aparece como botón dentro de la ventana "Agencia certificada" y se abre en una pestaña nueva. Si queda vacío, ese botón no se muestra.</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="pe_certificado_titulo">Ventana "Agencia certificada": título</label></th>
+					<td>
+						<input type="text" class="large-text" id="pe_certificado_titulo" name="pe_ajustes[certificado_titulo]" value="<?php echo esc_attr( pe_ajuste( 'certificado_titulo' ) ); ?>" placeholder="PlayaEscapes, agencia certificada por Sandos Hotels & Resorts">
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="pe_certificado_mensaje">Ventana "Agencia certificada": mensaje</label></th>
+					<td>
+						<textarea class="large-text" rows="4" id="pe_certificado_mensaje" name="pe_ajustes[certificado_mensaje]"><?php echo esc_textarea( pe_ajuste( 'certificado_mensaje' ) ); ?></textarea>
+						<p class="description">Se muestra al dar clic en el sello de la portada del Inicio. Si queda vacío, se usa el texto provisional.</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="pe_certificado_boton">Ventana "Agencia certificada": texto del botón a sandos.com</label></th>
+					<td>
+						<input type="text" class="regular-text" id="pe_certificado_boton" name="pe_ajustes[certificado_boton]" value="<?php echo esc_attr( pe_ajuste( 'certificado_boton' ) ); ?>" placeholder="Ver certificado en sandos.com">
 					</td>
 				</tr>
 			</table>
