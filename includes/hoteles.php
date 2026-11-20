@@ -167,3 +167,39 @@ function pe_contenido_columnas_hoteles( $columna, $post_id ) {
 	}
 }
 add_action( 'manage_pe_hotel_posts_custom_column', 'pe_contenido_columnas_hoteles', 10, 2 );
+
+// Texto de un hotel para las listas desplegables: "Nombre — Tipo · Ubicación".
+// Toma Tipo y Ubicación de la ficha del hotel (en el idioma actual). Si no hay ficha, solo el nombre.
+function pe_etiqueta_hotel( $hotel ) {
+	static $cache = array();
+	if ( isset( $cache[ $hotel ] ) ) {
+		return $cache[ $hotel ];
+	}
+
+	$args = array(
+		'post_type'        => 'pe_hotel',
+		'post_status'      => 'publish',
+		'posts_per_page'   => 1,
+		'fields'           => 'ids',
+		'meta_key'         => '_pe_hotel',
+		'meta_value'       => $hotel,
+		'suppress_filters' => false,
+	);
+	if ( function_exists( 'pll_current_language' ) && pll_current_language() ) {
+		$args['lang'] = pll_current_language();
+	}
+	$ids = get_posts( $args );
+
+	$etiqueta = $hotel;
+	if ( $ids ) {
+		$tipo      = trim( (string) get_post_meta( $ids[0], '_pe_hotel_tipo', true ) );
+		$ubicacion = trim( (string) get_post_meta( $ids[0], '_pe_hotel_ubicacion', true ) );
+		$detalles  = implode( ' · ', array_filter( array( $tipo, $ubicacion ) ) );
+		if ( '' !== $detalles ) {
+			$etiqueta .= ' — ' . $detalles;
+		}
+	}
+
+	$cache[ $hotel ] = $etiqueta;
+	return $etiqueta;
+}

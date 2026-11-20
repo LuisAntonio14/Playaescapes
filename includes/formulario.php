@@ -114,8 +114,7 @@ function pe_formulario_shortcode( $atts ) {
 			<select name="hotel" id="pe_f_hotel" required>
 				<option value=""><?php echo esc_html( pe_t( 'Selecciona un hotel' ) ); ?></option>
 				<?php foreach ( $hoteles as $hotel ) : ?>
-					<option value="<?php echo esc_attr( $hotel ); ?>" <?php selected( $atts['hotel'], $hotel ); ?>><?php echo esc_html( $hotel ); ?></option>
-				<?php endforeach; ?>
+					<option value="<?php echo esc_attr( $hotel ); ?>" <?php selected( $atts['hotel'], $hotel ); ?>><?php echo esc_html( function_exists( 'pe_etiqueta_hotel' ) ? pe_etiqueta_hotel( $hotel ) : $hotel ); ?></option>				<?php endforeach; ?>
 			</select>
 		</p>
 				<p>
