@@ -15,8 +15,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 function pe_traducciones_iniciales_en() {
 	return array(
-		'Contenido' => 'Contents',
-		'Introducción' => 'Introduction',
+		'PlayaEscapes, agencia certificada por Sandos Hotels & Resorts' => 'PlayaEscapes, an agency certified by Sandos Hotels & Resorts',
+		'Somos una agencia especializada en Sandos Hotels & Resorts en Cancún, Riviera Maya y Los Cabos. Reserva con un especialista, sin costo adicional, y recibe respuesta en menos de 24 horas.' => 'We are an agency specializing in Sandos Hotels & Resorts in Cancun, Riviera Maya, and Los Cabos. Book with a specialist at no additional cost and get a reply in less than 24 hours.',
+		'Ver certificado en sandos.com' => 'View certificate on sandos.com',
+		'Continuar en PlayaEscapes' => 'Continue on PlayaEscapes',
 	);
 }
 
