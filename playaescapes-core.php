@@ -20,8 +20,8 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/idiomas-enlaces.php';requir
 require_once plugin_dir_path( __FILE__ ) . 'includes/portadas.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/hot-escapes.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/hoteles.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/leads.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/correo.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/roles.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/textos-ingles.php';require_once plugin_dir_path( __FILE__ ) . 'includes/leads.php';require_once plugin_dir_path( __FILE__ ) . 'includes/correo.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/formulario.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/contacto.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/utm.php';
