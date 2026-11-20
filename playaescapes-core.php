@@ -14,6 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Módulos del plugin en el folder "includes"
 require_once plugin_dir_path( __FILE__ ) . 'includes/datos.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/idiomas.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/blog-prueba.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/traducciones-iniciales.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/idiomas-enlaces.php';require_once plugin_dir_path( __FILE__ ) . 'includes/ajustes.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/portadas.php';

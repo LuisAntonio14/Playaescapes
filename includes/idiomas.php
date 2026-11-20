@@ -51,7 +51,8 @@ function pe_textos_traducibles() {
 			'Reservar ahora',
 			'WhatsApp directo',
 			'Artículo:',
-		),
+			'Contenido',
+			'Introducción',		),
 		'Contacto' => array(
 			'Estamos aquí para ti',
 			'Tu próxima experiencia comienza con nosotros.',
