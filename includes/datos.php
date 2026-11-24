@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // las promociones y leads ya guardados.
 function pe_lista_hoteles() {
 	return array(
-		'Sandos Cancún',
+		'Sandos Cancun',
 		'Sandos Caracol Eco Resort',
 		'Sandos Playacar',
 		'Sandos Finisterra',
