@@ -42,41 +42,103 @@ add_action( 'add_meta_boxes', 'pe_agregar_metabox_hotel' );
 function pe_mostrar_metabox_hotel( $post ) {
 	wp_nonce_field( 'pe_guardar_hotel', 'pe_hotel_nonce' );
 
-	echo '<p class="description">Al publicar un hotel, aparece solo en las listas de hoteles del sitio (widget, formulario y promociones). Para quitarlo de las listas, pásalo a borrador.</p>';
+	$ubicacion = (string) get_post_meta( $post->ID, '_pe_hotel_ubicacion', true );
+	$tipo      = (string) get_post_meta( $post->ID, '_pe_hotel_tipo', true );
+	$precio    = (string) get_post_meta( $post->ID, '_pe_hotel_precio_desde', true );
+	$incluye   = (string) get_post_meta( $post->ID, '_pe_hotel_incluye', true );
 
-	$ubicacion = get_post_meta( $post->ID, '_pe_hotel_ubicacion', true );
-	$tipo      = get_post_meta( $post->ID, '_pe_hotel_tipo', true );
+	// Lista de pendientes para que el hotel se vea completo.
+	$pendientes = array();
+	if ( ! has_post_thumbnail( $post ) ) {
+		$pendientes[] = 'Imagen destacada (barra lateral derecha).';
+	}
+	if ( '' === trim( (string) $post->post_excerpt ) ) {
+		$pendientes[] = 'Extracto: el resumen corto de la tarjeta (barra lateral derecha).';
+	}
+	if ( '' === trim( $ubicacion ) ) {
+		$pendientes[] = 'Ubicación.';
+	}
+	if ( '' === trim( $precio ) ) {
+		$pendientes[] = 'Precio desde.';
+	}
+	?>
+	<div class="pe-ayuda-panel">
+		<p><strong>Dónde se ve este hotel</strong></p>
+		<ul>
+			<li><strong>Inicio, sección "Nuestros hoteles":</strong> imagen destacada, ubicación, tipo, nombre, extracto, los 3 primeros puntos de "Qué incluye" y precio desde.</li>
+			<li><strong>Listas de hoteles</strong> (widget de reserva, formulario y promociones): nombre en español + tipo + ubicación.</li>
+			<li><strong>Página del hotel:</strong> el texto del editor de arriba (la página está en diseño).</li>
+		</ul>
+		<p class="description">Al publicar el hotel, aparece solo en las listas. Para quitarlo, pásalo a borrador. Si cambias el nombre en español, sus promociones se actualizan solas. Imagen recomendada: horizontal, de al menos 1200 × 800 px.</p>
+	</div>
 
-	echo '<p><label for="pe_hotel_ubicacion"><strong>Ubicación (etiqueta de la tarjeta)</strong></label><br>';
-	printf(
-		'<input type="text" class="regular-text" name="pe_hotel_ubicacion" id="pe_hotel_ubicacion" value="%s" placeholder="Ejemplo: Playa del Carmen">',
-		esc_attr( $ubicacion )
-	);
-	echo '</p>';
+	<?php if ( 'auto-draft' !== $post->post_status && $pendientes ) : ?>
+		<div class="pe-ayuda-pendiente">
+			<p><strong>Para que el hotel se vea completo, falta:</strong></p>
+			<ul>
+				<?php foreach ( $pendientes as $pendiente ) : ?>
+					<li><?php echo esc_html( $pendiente ); ?></li>
+				<?php endforeach; ?>
+			</ul>
+		</div>
+	<?php endif; ?>
 
-	echo '<p><label for="pe_hotel_tipo"><strong>Tipo (etiquetas, separadas por coma)</strong></label><br>';
-	printf(
-		'<input type="text" class="regular-text" name="pe_hotel_tipo" id="pe_hotel_tipo" value="%s" placeholder="Ejemplo: Familiar, Solo adultos">',
-		esc_attr( $tipo )
-	);
-	echo '</p>';
+	<?php pe_aviso_traduccion( $post ); ?>
 
-	$precio  = get_post_meta( $post->ID, '_pe_hotel_precio_desde', true );
-	$incluye = get_post_meta( $post->ID, '_pe_hotel_incluye', true );
+	<div class="pe-campos-panel">
+		<p>
+			<label for="pe_hotel_ubicacion"><strong>Ubicación</strong></label>
+			<input type="text" class="regular-text" name="pe_hotel_ubicacion" id="pe_hotel_ubicacion" value="<?php echo esc_attr( $ubicacion ); ?>" placeholder="Ejemplo: Playa del Carmen">
+			<span class="description">Etiqueta con el ícono de ubicación en la tarjeta del Inicio.</span>
+		</p>
+		<p>
+			<label for="pe_hotel_tipo"><strong>Tipo</strong></label>
+			<input type="text" class="regular-text" name="pe_hotel_tipo" id="pe_hotel_tipo" value="<?php echo esc_attr( $tipo ); ?>" placeholder="Ejemplo: Familiar, Solo adultos">
+			<span class="description">Etiquetas separadas por coma. Cada una sale como una etiqueta en la tarjeta.</span>
+		</p>
+		<p>
+			<label for="pe_hotel_precio_desde"><strong>Precio desde (MXN por persona por noche)</strong></label>
+			<input type="number" min="0" step="1" name="pe_hotel_precio_desde" id="pe_hotel_precio_desde" value="<?php echo esc_attr( $precio ); ?>" placeholder="Ejemplo: 3500">
+			<span class="description">Solo el número, sin $ ni comas. Si queda vacío, la tarjeta no muestra precio.</span>
+		</p>
+		<p>
+			<label for="pe_hotel_incluye"><strong>Qué incluye</strong></label>
+			<textarea name="pe_hotel_incluye" id="pe_hotel_incluye" rows="6" placeholder="Un punto por línea. Ejemplo:&#10;Todo incluido&#10;Club de niños&#10;Playa privada"><?php echo esc_textarea( $incluye ); ?></textarea>
+			<span class="description">Un punto por línea. En la tarjeta del Inicio se muestran los 3 primeros. <span id="pe-incluye-cuenta"></span></span>
+		</p>
 
-	echo '<p><label for="pe_hotel_precio_desde"><strong>Precio desde (MXN por persona por noche)</strong></label><br>';
-	printf(
-		'<input type="number" min="0" step="1" name="pe_hotel_precio_desde" id="pe_hotel_precio_desde" value="%s">',
-		esc_attr( $precio )
-	);
-	echo '</p>';
+		<div class="pe-vista-previa">
+			<p><strong>Así se verá en las listas de hoteles:</strong></p>
+			<p class="pe-vista-previa__lista" id="pe-vista-lista"></p>
+		</div>
+	</div>
 
-	echo '<p><label for="pe_hotel_incluye"><strong>Qué incluye (un elemento por línea)</strong></label><br>';
-	printf(
-		'<textarea name="pe_hotel_incluye" id="pe_hotel_incluye" rows="6" style="width:100%%;">%s</textarea>',
-		esc_textarea( $incluye )
-	);
-	echo '</p>';
+	<script>
+	(function () {
+		var ubicacion = document.getElementById('pe_hotel_ubicacion');
+		var tipo = document.getElementById('pe_hotel_tipo');
+		var incluye = document.getElementById('pe_hotel_incluye');
+		var lista = document.getElementById('pe-vista-lista');
+		var cuenta = document.getElementById('pe-incluye-cuenta');
+
+		function titulo() {
+			var t = document.querySelector('.editor-post-title__input, .editor-post-title, #title');
+			if (!t) { return ''; }
+			return (t.value !== undefined ? t.value : t.textContent).trim();
+		}
+		function pintar() {
+			var detalles = [tipo.value.trim(), ubicacion.value.trim()].filter(Boolean).join(' · ');
+			lista.textContent = (titulo() || 'Nombre del hotel') + (detalles ? ' — ' + detalles : '');
+			var n = incluye.value.split(/\r?\n/).filter(function (l) { return l.trim(); }).length;
+			cuenta.textContent = n ? '(Llevas ' + n + (n === 1 ? ' punto' : ' puntos') + (n > 3 ? '; los demás no salen en el Inicio' : '') + '.)' : '';
+		}
+		[ubicacion, tipo, incluye].forEach(function (c) { c.addEventListener('input', pintar); });
+		document.addEventListener('input', pintar, true);
+		pintar();
+		setTimeout(pintar, 1500); // El título del editor carga después.
+	})();
+	</script>
+	<?php
 }
 
 // Guardar los datos al publicar o actualizar.
@@ -120,15 +182,50 @@ function pe_columnas_hoteles( $columnas ) {
 	if ( isset( $columnas['cb'] ) ) {
 		$nuevas['cb'] = $columnas['cb'];
 	}
+	$nuevas['pe_col_imagen'] = 'Imagen';
 	$nuevas['title']         = 'Hotel';
 	$nuevas['pe_col_precio'] = 'Precio desde';
-	$nuevas['date']          = 'Fecha';
+	$nuevas['pe_col_falta']  = 'Revisión';
+	// Columnas de idioma de Polylang.
+	foreach ( $columnas as $clave => $nombre ) {
+		if ( 0 === strpos( $clave, 'language_' ) ) {
+			$nuevas[ $clave ] = $nombre;
+		}
+	}
+	$nuevas['date'] = 'Fecha';
 	return $nuevas;
 }
 add_filter( 'manage_pe_hotel_posts_columns', 'pe_columnas_hoteles' );
 
 function pe_contenido_columnas_hoteles( $columna, $post_id ) {
 	switch ( $columna ) {
+		case 'pe_col_imagen':
+			if ( has_post_thumbnail( $post_id ) ) {
+				echo get_the_post_thumbnail( $post_id, array( 60, 40 ), array( 'style' => 'width:60px;height:40px;object-fit:cover;border-radius:4px;' ) );
+			} else {
+				echo '<span style="color:#b32d2e;">Sin imagen</span>';
+			}
+			break;
+
+		case 'pe_col_falta':
+			$falta = array();
+			if ( ! has_post_thumbnail( $post_id ) ) {
+				$falta[] = 'imagen';
+			}
+			if ( '' === trim( (string) get_post_field( 'post_excerpt', $post_id ) ) ) {
+				$falta[] = 'extracto';
+			}
+			if ( '' === trim( (string) get_post_meta( $post_id, '_pe_hotel_ubicacion', true ) ) ) {
+				$falta[] = 'ubicación';
+			}
+			if ( '' === trim( (string) get_post_meta( $post_id, '_pe_hotel_precio_desde', true ) ) ) {
+				$falta[] = 'precio';
+			}
+			echo $falta
+				? '<span style="color:#b32d2e;">Falta: ' . esc_html( implode( ', ', $falta ) ) . '</span>'
+				: '<span style="color:#008a20;">&#10003; Completo</span>';
+			break;
+
 		case 'pe_col_precio':
 			$precio = get_post_meta( $post_id, '_pe_hotel_precio_desde', true );
 			if ( '' !== $precio ) {
