@@ -18,8 +18,8 @@ function pe_textos_menu() {
 		return;
 	}
 	add_menu_page(
-		'Textos en inglés',
-		'Textos en inglés',
+		'Textos del sitio',
+		'Textos del sitio',
 		PE_TEXTOS_PERMISO,
 		'pe-textos-ingles',
 		'pe_textos_pagina',
@@ -45,15 +45,18 @@ function pe_textos_registrados() {
 	return $grupos;
 }
 
-// Idiomas a traducir (todos menos el predeterminado).
+// Idiomas: primero el predeterminado (español, para cambiar el texto original) y luego los demás.
 function pe_textos_idiomas() {
-	$idiomas = array();
+	$principal = array();
+	$otros     = array();
 	foreach ( pll_languages_list( array( 'fields' => '' ) ) as $idioma ) {
-		if ( $idioma->slug !== pll_default_language() ) {
-			$idiomas[] = $idioma;
+		if ( $idioma->slug === pll_default_language() ) {
+			$principal[] = $idioma;
+		} else {
+			$otros[] = $idioma;
 		}
 	}
-	return $idiomas;
+	return array_merge( $principal, $otros );
 }
 
 // Traducción guardada de un texto, o vacío si no tiene.
@@ -116,8 +119,9 @@ function pe_textos_pagina() {
 	}
 	?>
 	<div class="wrap">
-		<h1>Textos en inglés</h1>
-		<p>Textos fijos del sitio (menú, botones, formularios, Inicio, Blog…). Escribe la traducción y da clic en <strong>Guardar cambios</strong>. Si un campo queda vacío, en inglés se muestra el texto en español.</p>
+		<h1>Textos del sitio</h1>
+		<p>Textos fijos del sitio (menú, botones, formularios, Inicio, Blog…). Escribe el texto nuevo y da clic en <strong>Guardar cambios</strong>.</p>
+		<p><strong>Español:</strong> escribe solo si quieres cambiar el texto original; si queda vacío, se usa el original. <strong>English:</strong> si queda vacío, en inglés se muestra el texto original en español.</p>
 		<p>Las páginas, entradas, hoteles y promociones se traducen desde su propio editor, con el botón "+" de la bandera.</p>
 
 		<?php if ( '' !== $aviso ) : ?>
@@ -137,9 +141,9 @@ function pe_textos_pagina() {
 					<table class="widefat striped pe-textos-tabla">
 						<thead>
 							<tr>
-								<th style="width:40%;">Español</th>
+								<th style="width:30%;">Texto original</th>
 								<?php foreach ( $idiomas as $idioma ) : ?>
-									<th><?php echo esc_html( $idioma->name ); ?></th>
+									<th><?php echo esc_html( $idioma->slug === pll_default_language() ? $idioma->name . ' (texto nuevo)' : $idioma->name ); ?></th>
 								<?php endforeach; ?>
 							</tr>
 						</thead>
