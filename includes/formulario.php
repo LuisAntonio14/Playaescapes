@@ -327,7 +327,15 @@ function pe_boton_reservar_shortcode( $atts ) {
 	$post = get_post();
 
 	if ( $post && in_array( $post->post_type, array( 'pe_hotel', 'hot_escape' ), true ) ) {
-		$hotel = get_post_meta( $post->ID, '_pe_hotel', true );
+		if ( 'pe_hotel' === $post->post_type ) {
+			// En una ficha de hotel, el hotel es su propio nombre en español.
+			$id_es = ( function_exists( 'pll_get_post' ) && function_exists( 'pll_default_language' ) )
+				? pll_get_post( $post->ID, pll_default_language() )
+				: 0;
+			$hotel = trim( (string) get_post_field( 'post_title', $id_es ? $id_es : $post->ID ) );
+		} else {
+			$hotel = get_post_meta( $post->ID, '_pe_hotel', true );
+		}
 		if ( '' !== $hotel ) {
 			$args['pe_reserva_hotel'] = $hotel;
 		}
